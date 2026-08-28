@@ -34,9 +34,9 @@ plugins:
 
 pluginsConfig:
   github:
-    url: https://github.com/zauronlabs/guardian-pro
+    url: https://github.com/Zauron-Labs/guardian-pro-gitbook
   github-buttons:
-    repo: zauronlabs/guardian-pro
+    repo: Zauron-Labs/guardian-pro-gitbook
     types:
       - watch
       - star
@@ -44,5 +44,5 @@ pluginsConfig:
       - follow
     size: small
   edit-link:
-    base: https://github.com/zauronlabs/guardian-pro/edit/main
+    base: https://github.com/Zauron-Labs/guardian-pro-gitbook/edit/main
     label: "Edit This Page"

@@ -1,7 +1,7 @@
 # Guardian Pro Documentation
 
 [![GitBook](https://img.shields.io/badge/GitBook-Documentation-blue)](https://docs.zauronlabs.com/guardian-pro)
-[![Version](https://img.shields.io/badge/version-1.0-green)](https://github.com/zauronlabs/guardian-pro)
+[![Version](https://img.shields.io/badge/version-1.0-green)](https://github.com/Zauron-Labs/guardian-pro-gitbook)
 
 ## AI-Enriched Peer Review Platform for Radiology
 
