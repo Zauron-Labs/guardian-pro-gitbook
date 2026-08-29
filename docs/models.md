@@ -4,6 +4,12 @@ Guardian Pro is compatible with purpose-built AI models to identify quality-rele
 
 **Minimum Positive Predictive Value (PPV)** represents the lowest acceptable precision threshold validated on clinical data. Models at or above this threshold are deployed for case selection.
 
+## How models are delivered
+
+Supported models ship as Docker images in the **Zauron Azure Container Registry**. The Guardian VM pulls those images into modular containers on your virtual network. Each site enables models through the dashboard Model Zoo (clinical triggering rules live in the model portfolio: modality, body part, CPT, confidence thresholds, and ICD filters).
+
+Custom models use the same contract. See the [Guardian Model API](api_reference.md) for `.tar.gz` study input, `/health-check`, `/predict`, and optional async predict.
+
 ## Model Catalog (Alphabetical by Abnormality Type)
 
 | Abnormality Type | Modality | Body Part | Minimum Positive Predictive Value | Open or Closed Source |

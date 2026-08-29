@@ -2,18 +2,20 @@
 
 This document covers two distinct API systems within Guardian Pro:
 
-1. **Guardian Model API** - For integrating custom AI models with Guardian Pro
-2. **Guardian Pro PACS Integration API** - For connecting PACS systems to Guardian Pro
+1. **Guardian Model API** — for integrating custom AI models with Guardian Pro
+2. **Guardian Pro PACS Integration API** — for flagging cases from PACS via a browser deep link
 
 ---
 
 # Guardian Model API
 
-**Version 1.0** | API specification for Guardian-compatible model containers.
+**Version 1.1** | API specification for Guardian-compatible model containers.
 
 ## Overview
 
-Your Docker container receives DICOM studies as TAR archives and returns JSON predictions. Expose port **8000** with the endpoints below.
+Guardian pulls model images from the Zauron Azure Container Registry and runs them as modular containers (or as remote HTTP endpoints). Your container receives DICOM studies as **gzip-compressed TAR archives** (`.tar.gz`) and returns JSON predictions. Expose port **8000** with the endpoints below.
+
+Synchronous `POST /predict` is required. If inference may exceed a few minutes (common for large CT studies), also implement async predict. Guardian discovers async support from `GET /health-check` and will use `POST /predict/async` automatically.
 
 ---
 
@@ -21,11 +23,11 @@ Your Docker container receives DICOM studies as TAR archives and returns JSON pr
 
 | Field | Requirement |
 |-------|-------------|
-| **Format** | TAR archive containing raw DICOM files |
+| **Format** | gzip-compressed TAR archive (`.tar.gz`) containing raw DICOM files |
 | **File types** | `.dcm`, `.dicom`, or extensionless with DICM header |
 | **Max size** | 8GB |
 
-Your container handles all processing internally (windowing, normalization, inference).
+Your container handles all processing internally (windowing, normalization, inference). Guardian still accepts uncompressed `.tar` for compatibility; production traffic is `.tar.gz`.
 
 ---
 
@@ -40,9 +42,15 @@ Returns service status.
 {
   "status": "healthy",
   "model_loaded": true,
-  "message": "Service ready for predictions"
+  "message": "Service ready for predictions",
+  "predict_api": {
+    "sync": true,
+    "async": true
+  }
 }
 ```
+
+Include `predict_api.async: true` when `POST /predict/async` is implemented. Guardian uses this field to choose sync vs async at runtime. Omit `predict_api` (or set `async` to `false`) for sync-only models.
 
 **Response** `500` (if unhealthy)
 ```json
@@ -63,7 +71,7 @@ Processes a DICOM study and returns predictions.
 ```
 Content-Type: multipart/form-data
 
-study: <tar_file>              # Required
+study: <tar.gz file>           # Required
 conf_threshold: 0.2            # Optional, float 0.0-1.0
 ```
 
@@ -102,6 +110,41 @@ conf_threshold: 0.2            # Optional, float 0.0-1.0
 | `icd10_snippet` | string | Clinical context snippet |
 
 All fields are required.
+
+---
+
+### `POST /predict/async`
+
+Optional. Use when inference may run longer than a reverse-proxy idle timeout. Same multipart fields as `POST /predict`.
+
+**Response** `202 Accepted`
+```json
+{
+  "job_id": "uuid",
+  "status": "queued",
+  "study_filename": "study.tar.gz",
+  "conf_threshold": 0.2,
+  "submitted_at": "2026-06-14T12:00:00+00:00",
+  "poll_url": "/predict/jobs/{job_id}",
+  "message": "Waiting for inference"
+}
+```
+
+### `GET /predict/jobs/{job_id}`
+
+Poll until `status` is `complete` or `failed`. While queued or running, return those statuses. On success, return the same prediction payload as `POST /predict`, plus job metadata.
+
+**Response** `200 OK` (complete)
+```json
+{
+  "job_id": "uuid",
+  "status": "complete",
+  "generated_report": "Clinical findings summary.",
+  "predictions": []
+}
+```
+
+Guardian's wall-clock budget for a predict call (sync HTTP timeout, or async submit-plus-poll) defaults to **1800 seconds** (`GUARDIAN_CV_PREDICT_TIMEOUT_SEC`).
 
 ---
 
@@ -192,8 +235,8 @@ Returns container logs.
 
 | Metric | Requirement |
 |--------|-------------|
-| Inference time | ≤ 30 seconds per study |
-| Memory | ≤ 8GB RAM |
+| Inference time | Complete within the site predict timeout (default **30 minutes**). Use async predict for long-running studies. |
+| Memory | Size the container to the model; 8 GB is a common minimum for 2D models |
 | Health check | < 5 seconds |
 
 ---
@@ -257,254 +300,11 @@ When a radiologist clicks the button in their PACS application:
 
 ---
 
-## Guardian Pro PACS Worklist Integration (Bidirectional Event Sync)
+## PACS Worklist Bidirectional Event Sync (retired)
 
-### Overview
+Bidirectional PACS worklist event sync (`/api/v1/pacs/events/*`) was **retired in April 2026** and is no longer part of Guardian Pro.
 
-Guardian Pro supports bidirectional PACS worklist synchronization using event-driven APIs.
-
-This integration allows PACS and Guardian Pro to exchange create/update/delete events for:
-
-- `peer_review` tasks
-- `self_review` tasks
-- `interesting_case` tasks
-
-Use this integration when both systems must stay in sync without duplicate manual task completion.
-
----
-
-### Authentication
-
-All PACS worklist endpoints require a shared API key header:
-
-- Header: `X-Guardian-Api-Key`
-- Value: configured in Guardian Pro (`GUARDIAN_PACS_SYNC_API_KEY`)
-
-Requests without a valid key return `401 Unauthorized`.
-
----
-
-### Event Types and Actions
-
-#### Event Types
-- `peer_review`
-- `self_review`
-- `interesting_case`
-
-#### Actions
-- `created`
-- `updated`
-- `deleted`
-
----
-
-### Inbound Endpoints (PACS -> Guardian)
-
-Base path:
-
-`/api/v1/pacs`
-
-#### Create/Update/Delete Peer Review
-`POST /api/v1/pacs/events/peer-review`
-
-#### Create/Update/Delete Self Review
-`POST /api/v1/pacs/events/self-review`
-
-#### Create/Update/Delete Interesting Case
-`POST /api/v1/pacs/events/interesting-case`
-
-#### Queue Health
-`GET /api/v1/pacs/events/health`
-
-#### Manual Dispatch Trigger (optional operational endpoint)
-`POST /api/v1/pacs/events/dispatch`
-
----
-
-### Outbound Delivery (Guardian -> PACS)
-
-Guardian Pro emits outbound events to PACS via an outbox dispatcher to:
-
-- `GUARDIAN_PACS_SYNC_OUTBOUND_URL`
-
-Outbound events use the same canonical event envelope (`event_type`, `action`, `study_uid`, etc.) and are retried automatically on transient failure.
-
----
-
-### Event Payload Contract
-
-#### Request Body (Inbound)
-```json
-{
-  "source_system": "agfa_pacs",
-  "event_id": "evt-123456",
-  "occurred_at": "2026-03-09T12:34:56Z",
-  "event_type": "peer_review",
-  "action": "created",
-  "study_uid": "1.2.840.113619.2.55.3.123456",
-  "payload": {
-    "review_event_id": 12345,
-    "determination": 0,
-    "comments": "Optional comments"
-  }
-}
-```
-
-#### Response
-```json
-{
-  "accepted": true,
-  "duplicate": false,
-  "message": "Event processed",
-  "event_id": "evt-123456",
-  "study_uid": "1.2.840.113619.2.55.3.123456",
-  "event_type": "peer_review",
-  "action": "created"
-}
-```
-
----
-
-### Idempotency and Retries
-
-- Idempotency key: `(source_system, event_id)`
-- Duplicate inbound events are acknowledged with `duplicate: true`
-- Outbound delivery uses retry/backoff with queued status tracking (`pending`, `retrying`, `failed`, `sent`)
-
----
-
-### Configuration
-
-Set these in Guardian Pro environment:
-
-- `GUARDIAN_PACS_SYNC_ENABLED=true`
-- `GUARDIAN_PACS_SYNC_API_KEY=<shared-secret>`
-- `GUARDIAN_PACS_SYNC_OUTBOUND_URL=https://<pacs-endpoint>/...`
-- `GUARDIAN_PACS_SYNC_DISPATCH_INTERVAL_SECONDS`
-- `GUARDIAN_PACS_SYNC_DISPATCH_BATCH_SIZE`
-- `GUARDIAN_PACS_SYNC_REQUEST_TIMEOUT_SECONDS`
-- `GUARDIAN_PACS_SYNC_MAX_ATTEMPTS`
-- `GUARDIAN_PACS_SYNC_RETRY_BASE_SECONDS`
-- `GUARDIAN_PACS_SYNC_RETRY_MAX_SECONDS`
-- `GUARDIAN_PACS_SYNC_INTERESTING_POLL_SECONDS`
-
----
-
-### Integration Steps
-
-1. Enable PACS sync config and deploy Guardian Pro.
-2. Configure PACS to call inbound Guardian endpoints for `peer_review`, `self_review`, and `interesting_case`.
-3. Configure Guardian outbound URL to PACS receiver.
-4. Use unique `event_id` values per source system for idempotency.
-5. Validate with test events for all actions (`created`, `updated`, `deleted`) and event types.
-6. Monitor `/api/v1/pacs/events/health` during go-live.
-
----
-
-### Testing (curl examples)
-
-#### Inbound peer review example
-```bash
-curl -X POST "https://<GUARDIAN_DOMAIN>/api/v1/pacs/events/peer-review" \
-  -H "Content-Type: application/json" \
-  -H "X-Guardian-Api-Key: <shared-secret>" \
-  -d '{
-    "source_system":"agfa_pacs",
-    "event_id":"evt-pr-001",
-    "occurred_at":"2026-03-09T15:00:00Z",
-    "event_type":"peer_review",
-    "action":"created",
-    "study_uid":"1.2.840.113619.2.55.3.123456",
-    "payload":{"determination":0}
-  }'
-```
-
-#### Inbound self review example
-```bash
-curl -X POST "https://<GUARDIAN_DOMAIN>/api/v1/pacs/events/self-review" \
-  -H "Content-Type: application/json" \
-  -H "X-Guardian-Api-Key: <shared-secret>" \
-  -d '{
-    "source_system":"agfa_pacs",
-    "event_id":"evt-sr-001",
-    "occurred_at":"2026-03-09T15:01:00Z",
-    "event_type":"self_review",
-    "action":"updated",
-    "study_uid":"1.2.840.113619.2.55.3.123456",
-    "payload":{"determination":1}
-  }'
-```
-
-#### Inbound interesting case example
-```bash
-curl -X POST "https://<GUARDIAN_DOMAIN>/api/v1/pacs/events/interesting-case" \
-  -H "Content-Type: application/json" \
-  -H "X-Guardian-Api-Key: <shared-secret>" \
-  -d '{
-    "source_system":"agfa_pacs",
-    "event_id":"evt-ic-001",
-    "occurred_at":"2026-03-09T15:02:00Z",
-    "event_type":"interesting_case",
-    "action":"deleted",
-    "study_uid":"1.2.840.113619.2.55.3.123456",
-    "payload":{}
-  }'
-```
-
-#### Dispatch health
-```bash
-curl -H "X-Guardian-Api-Key: <shared-secret>" \
-  "https://<GUARDIAN_DOMAIN>/api/v1/pacs/events/health"
-```
-
----
-
-### Vendor Implementation Checklist (AGFA/PACS)
-
-Use this checklist during implementation, validation, and go-live.
-
-#### 1) Connectivity and Security
-- [ ] Guardian endpoint is reachable from PACS network: `https://<GUARDIAN_DOMAIN>/api/v1/pacs/...`
-- [ ] PACS outbound TLS trust chain is validated for Guardian certificate
-- [ ] Shared API key is configured on both sides (`X-Guardian-Api-Key`)
-- [ ] API key rotation and secret ownership are documented
-
-#### 2) Event Contract Mapping
-- [ ] PACS emits `event_type` values only from: `peer_review`, `self_review`, `interesting_case`
-- [ ] PACS emits `action` values only from: `created`, `updated`, `deleted`
-- [ ] `study_uid` is populated with DICOM `StudyInstanceUID`
-- [ ] `occurred_at` is sent in UTC ISO-8601 format (for example: `2026-03-09T15:00:00Z`)
-- [ ] `source_system` is stable and environment-specific (for example: `agfa_pacs_prod`)
-
-#### 3) Idempotency and Ordering
-- [ ] `event_id` is globally unique per `source_system`
-- [ ] Retry from PACS preserves the same `event_id` (do not generate a new ID on retry)
-- [ ] Duplicate events are treated as success when Guardian responds with `duplicate: true`
-- [ ] Out-of-order updates/deletes are handled according to PACS business rules
-
-#### 4) Inbound Endpoint Coverage
-- [ ] `POST /api/v1/pacs/events/peer-review` tested for `created`, `updated`, `deleted`
-- [ ] `POST /api/v1/pacs/events/self-review` tested for `created`, `updated`, `deleted`
-- [ ] `POST /api/v1/pacs/events/interesting-case` tested for `created`, `updated`, `deleted`
-- [ ] Negative tests validated (`401`, malformed JSON, missing required fields)
-
-#### 5) Outbound Receiver Readiness (Guardian -> PACS)
-- [ ] PACS receiver URL is deployed and reachable at `GUARDIAN_PACS_SYNC_OUTBOUND_URL`
-- [ ] PACS receiver accepts the canonical Guardian event envelope
-- [ ] PACS receiver returns clear HTTP status codes (`2xx` success, `4xx/5xx` failure)
-- [ ] PACS receiver is idempotent for repeated delivery attempts
-
-#### 6) Operational Controls
-- [ ] `GET /api/v1/pacs/events/health` is included in PACS/ops monitoring
-- [ ] Manual dispatch endpoint is secured and documented: `POST /api/v1/pacs/events/dispatch`
-- [ ] Guardian retry and backoff settings are tuned for site SLAs
-- [ ] Alerting is configured for sustained queue failures (`failed`, high retry volume)
-
-#### 7) Go-Live Validation
-- [ ] End-to-end test completed in non-production with all event types and actions
-- [ ] Production dry run completed with a limited pilot group
-- [ ] Rollback procedure and contact matrix are documented
-- [ ] Post go-live monitoring window and ownership are confirmed
+Use DICOM connectivity (C-FIND / C-MOVE / C-STORE) for study access, and the **Flag Case** deep link above for radiologist-initiated peer review from PACS. Optional worklist assignment for unreported orders is configured on the Guardian dashboard when enabled for your site — it is not this event-sync API.
 
 ---
 
@@ -514,9 +314,14 @@ Use this checklist during implementation, validation, and go-live.
 # Health check
 curl http://localhost:8000/health-check
 
-# Prediction
+# Synchronous prediction (.tar.gz)
 curl -X POST http://localhost:8000/predict \
-  -F "study=@study.tar" \
+  -F "study=@study.tar.gz" \
+  -F "conf_threshold=0.3"
+
+# Asynchronous prediction (when advertised on /health-check)
+curl -X POST http://localhost:8000/predict/async \
+  -F "study=@study.tar.gz" \
   -F "conf_threshold=0.3"
 
 # Get mappings
@@ -534,3 +339,4 @@ curl http://localhost:8000/logging
 # Test flag case endpoint (replace with your domain and parameters)
 curl "https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith"
 ```
+

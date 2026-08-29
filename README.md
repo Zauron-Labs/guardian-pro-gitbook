@@ -10,7 +10,7 @@ Guardian Pro revolutionizes radiology quality assurance through intelligent case
 ## Quick Start
 
 - **[Introduction](docs/introduction.md)** - Learn about Guardian Pro's capabilities
-- **[Installation Guide](docs/installation.md)** - Deploy on-premises or cloud
+- **[Installation Guide](docs/installation.md)** - Choose Azure, AWS, Google, or Self-hosted
 - **[Training & Onboarding](docs/training.md)** - Get started with comprehensive training resources
 - **[Compliance & Accreditation](docs/compliance.md)** - Ensure regulatory compliance
 - **[API Reference](docs/api_reference.md)** - Integrate custom AI models
@@ -24,8 +24,10 @@ Guardian Pro revolutionizes radiology quality assurance through intelligent case
 
 ## Deployment Options
 
-- **On-Premises**: Full control on AWS, Azure, or Google Cloud
-- **Cloud**: HIPAA/GDPR compliant with secure VPN access
+- **Azure**: Customer VNet (Terraform into an existing VNet)
+- **AWS**: Customer VPC (Terraform into an existing VPC)
+- **Google**: Customer GCP VPC
+- **Self-hosted**: Customer data center or private cloud
 
 ## Support
 
