@@ -12,7 +12,7 @@ Contact your Zauron representative for pricing, licensing, and deployment option
 
 Our team provides monitoring and technical assistance for all Guardian Pro deployments.
 
-- **Email**: [support@zauronlabs.com](mailto:support@zauronlabs.com)
+- **Email**: [service@zauronlabs.com](mailto:service@zauronlabs.com)
 
 ## Website
 

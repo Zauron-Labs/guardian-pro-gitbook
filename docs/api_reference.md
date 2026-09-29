@@ -9,13 +9,27 @@ This document covers two distinct API systems within Guardian Pro:
 
 # Guardian Model API
 
-**Version 1.1** | API specification for Guardian-compatible model containers.
+**Version 1.2** | API specification for Guardian-compatible model containers.
 
 ## Overview
 
-Guardian pulls model images from the Zauron Azure Container Registry and runs them as modular containers (or as remote HTTP endpoints). Your container receives DICOM studies as **gzip-compressed TAR archives** (`.tar.gz`) and returns JSON predictions. Expose port **8000** with the endpoints below.
+Guardian runs your model in one of two ways:
 
-Synchronous `POST /predict` is required. If inference may exceed a few minutes (common for large CT studies), also implement async predict. Guardian discovers async support from `GET /health-check` and will use `POST /predict/async` automatically.
+- **Container:** Guardian pulls your model image from Zauron's container registry and runs it next to Guardian.
+- **Hosted endpoint:** your model runs as an HTTPS service that Guardian calls.
+
+Either way, your model receives one DICOM study at a time as a **gzip-compressed TAR archive** (`.tar.gz`) and returns JSON predictions. A container listens on port **8000**.
+
+| Endpoint | Required | Used for |
+|----------|----------|----------|
+| `GET /icd10-mapping` | **Yes** | Readiness. Guardian calls it until it returns `200` before sending studies. Its mappings name the findings the model reports. |
+| `POST /predict` | **Yes** | Inference on one study |
+| `GET /health-check` | Hosted endpoints with async predict | Tells Guardian that `POST /predict/async` is available |
+| `POST /predict/async` + `GET /predict/jobs/{job_id}` | Optional, hosted endpoints only | Long-running inference (for example large CT studies) |
+
+Containers always receive synchronous `POST /predict` calls. Container images should include `curl`, which the container health check uses to call `GET /icd10-mapping`.
+
+**Authentication (hosted endpoints):** Guardian sends your endpoint's API key in the `X-API-Key` header. Tell Zauron if your endpoint expects `Authorization: Bearer <key>` instead.
 
 ---
 
@@ -23,134 +37,18 @@ Synchronous `POST /predict` is required. If inference may exceed a few minutes (
 
 | Field | Requirement |
 |-------|-------------|
-| **Format** | gzip-compressed TAR archive (`.tar.gz`) containing raw DICOM files |
-| **File types** | `.dcm`, `.dicom`, or extensionless with DICM header |
-| **Max size** | 8GB |
+| **Format** | gzip-compressed TAR archive (`.tar.gz`) of raw DICOM files |
+| **File types** | `.dcm`, `.dicom`, or extensionless files with a DICM header |
 
-Your container handles all processing internally (windowing, normalization, inference). Guardian still accepts uncompressed `.tar` for compatibility; production traffic is `.tar.gz`.
+Your model handles all processing internally (windowing, normalization, inference). Guardian always sends `.tar.gz`. Accepting an uncompressed `.tar` as well makes local testing easier.
 
 ---
 
 ## Endpoints
 
-### `GET /health-check`
-
-Returns service status.
-
-**Response** `200 OK`
-```json
-{
-  "status": "healthy",
-  "model_loaded": true,
-  "message": "Service ready for predictions",
-  "predict_api": {
-    "sync": true,
-    "async": true
-  }
-}
-```
-
-Include `predict_api.async: true` when `POST /predict/async` is implemented. Guardian uses this field to choose sync vs async at runtime. Omit `predict_api` (or set `async` to `false`) for sync-only models.
-
-**Response** `500` (if unhealthy)
-```json
-{
-  "status": "unhealthy",
-  "model_loaded": false,
-  "message": "Model failed to load"
-}
-```
-
----
-
-### `POST /predict`
-
-Processes a DICOM study and returns predictions.
-
-**Request**
-```
-Content-Type: multipart/form-data
-
-study: <tar.gz file>           # Required
-conf_threshold: 0.2            # Optional, float 0.0-1.0
-```
-
-**Response** `200 OK`
-```json
-{
-  "generated_report": "Clinical findings summary.",
-  "predictions": [
-    {
-      "abnormality": "pulmonary_embolism",
-      "bounding_box": [0.45, 0.32, 0.12, 0.08],
-      "confidence": 0.95,
-      "study_uid": "1.2.840.113619.2.55.3.123456",
-      "series_uid": "1.2.840.113619.2.55.3.123456.1",
-      "instance_uid": "1.2.840.113619.2.55.3.123456.1.1",
-      "icd10_code": "I26.9",
-      "icd10_description": "Pulmonary embolism without acute cor pulmonale",
-      "icd10_snippet": "PE detected. Recommend anticoagulation therapy."
-    }
-  ]
-}
-```
-
-#### Prediction Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `abnormality` | string | Condition name |
-| `bounding_box` | array[4] | YOLO format `[x, y, w, h]`, normalized 0-1 |
-| `confidence` | float | 0-1 |
-| `study_uid` | string | DICOM StudyInstanceUID |
-| `series_uid` | string | DICOM SeriesInstanceUID |
-| `instance_uid` | string | DICOM SOPInstanceUID |
-| `icd10_code` | string | ICD-10 diagnosis code |
-| `icd10_description` | string | ICD-10 description |
-| `icd10_snippet` | string | Clinical context snippet |
-
-All fields are required.
-
----
-
-### `POST /predict/async`
-
-Optional. Use when inference may run longer than a reverse-proxy idle timeout. Same multipart fields as `POST /predict`.
-
-**Response** `202 Accepted`
-```json
-{
-  "job_id": "uuid",
-  "status": "queued",
-  "study_filename": "study.tar.gz",
-  "conf_threshold": 0.2,
-  "submitted_at": "2026-06-14T12:00:00+00:00",
-  "poll_url": "/predict/jobs/{job_id}",
-  "message": "Waiting for inference"
-}
-```
-
-### `GET /predict/jobs/{job_id}`
-
-Poll until `status` is `complete` or `failed`. While queued or running, return those statuses. On success, return the same prediction payload as `POST /predict`, plus job metadata.
-
-**Response** `200 OK` (complete)
-```json
-{
-  "job_id": "uuid",
-  "status": "complete",
-  "generated_report": "Clinical findings summary.",
-  "predictions": []
-}
-```
-
-Guardian's wall-clock budget for a predict call (sync HTTP timeout, or async submit-plus-poll) defaults to **1800 seconds** (`GUARDIAN_CV_PREDICT_TIMEOUT_SEC`).
-
----
-
 ### `GET /icd10-mapping`
 
-Returns current ICD-10 mappings.
+Returns the findings your model reports, mapped to ICD-10 codes. Guardian polls this endpoint until it returns `200`, and records each mapping's `code` and `description`.
 
 **Response** `200 OK`
 ```json
@@ -158,8 +56,7 @@ Returns current ICD-10 mappings.
   "mappings": {
     "pulmonary_embolism": {
       "code": "I26.9",
-      "description": "Pulmonary embolism without acute cor pulmonale",
-      "icd10_snippet": "PE detected. Recommend anticoagulation therapy."
+      "description": "Pulmonary embolism without acute cor pulmonale"
     }
   },
   "count": 1,
@@ -169,47 +66,113 @@ Returns current ICD-10 mappings.
 
 ---
 
-### `POST /icd10-mapping`
+### `POST /predict`
 
-Updates ICD-10 mappings.
+Processes one DICOM study and returns predictions.
 
 **Request**
+```
+Content-Type: multipart/form-data
+
+study: <tar.gz file>           # Required
+conf_threshold: 0.2            # Always sent, float 0.0-1.0: return findings at or above this confidence
+mask_threshold: 0.5            # Sent only when the site sets one (segmentation models), float 0.0-1.0
+```
+
+**Response** `200 OK`
 ```json
 {
-  "pulmonary_embolism": {
-    "code": "I26.9",
-    "description": "Pulmonary embolism without acute cor pulmonale",
-    "icd10_snippet": "PE detected. Recommend anticoagulation therapy."
+  "generated_report": "Clinical findings summary.",
+  "predictions": [
+    {
+      "icd10_code": "I26.9",
+      "confidence": 0.95,
+      "bounding_box": [0.45, 0.32, 0.12, 0.08],
+      "study_uid": "1.2.840.113619.2.55.3.123456",
+      "series_uid": "1.2.840.113619.2.55.3.123456.1",
+      "instance_uid": "1.2.840.113619.2.55.3.123456.1.1",
+      "abnormality": "pulmonary_embolism"
+    }
+  ]
+}
+```
+
+Return an empty `predictions` list when nothing is found.
+
+#### Prediction Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `icd10_code` | string | **Yes** | ICD-10 code of the finding, for example `I26.9`. Predictions without a valid ICD-10 code are ignored. |
+| `confidence` | float | Recommended | 0-1. `conf` is accepted as an alias. |
+| `bounding_box` | array[4] | No | `[x_center, y_center, width, height]`, normalized 0-1 (YOLO format) |
+| `series_uid` | string | No | DICOM SeriesInstanceUID of the image with the finding |
+| `instance_uid` | string | No | DICOM SOPInstanceUID of the image with the finding |
+| `study_uid` | string | No | DICOM StudyInstanceUID. Guardian matches results to the study it sent, so this is informational. |
+| `abnormality` | string | No | Finding name, for your own logs |
+
+`generated_report` (string, optional) is a free-text summary of the study.
+
+---
+
+### `GET /health-check`
+
+Needed only by hosted endpoints that implement async predict.
+
+**Response** `200 OK`
+```json
+{
+  "status": "healthy",
+  "model_loaded": true,
+  "predict_api": {
+    "sync": true,
+    "async": true
   }
 }
 ```
 
-**Response** `200 OK`
-```json
-{
-  "status": "updated",
-  "mappings_count": 1,
-  "message": "ICD-10 mappings updated successfully"
-}
-```
+Set `predict_api.async: true` when `POST /predict/async` is implemented. Omit `predict_api`, or set `async` to `false`, for sync-only endpoints.
 
 ---
 
-### `GET /logging`
+### `POST /predict/async`
 
-Returns container logs.
+Optional, hosted endpoints only. Use it when inference may run longer than a proxy's idle timeout. It takes the same multipart fields as `POST /predict`.
 
-**Response** `200 OK`
+**Response** `202 Accepted` with a non-empty `job_id`:
 ```json
 {
-  "logs": [
-    "2024-01-15 10:00:00 INFO: Model loaded successfully",
-    "2024-01-15 10:01:23 INFO: Processing study..."
-  ],
-  "log_count": 2,
-  "timestamp": "2024-01-15T10:01:30Z"
+  "job_id": "uuid",
+  "status": "queued"
 }
 ```
+
+### `GET /predict/jobs/{job_id}`
+
+Guardian polls this until `status` is `complete` or `failed`. Return `queued` or `running` while the job is in progress.
+
+**Response** `200 OK` (complete): the same payload as `POST /predict`, plus the job fields.
+```json
+{
+  "job_id": "uuid",
+  "status": "complete",
+  "generated_report": "Clinical findings summary.",
+  "predictions": []
+}
+```
+
+**Response** `200 OK` (failed): put the reason in `error` (or `message`).
+```json
+{
+  "job_id": "uuid",
+  "status": "failed",
+  "error": "Series could not be decoded"
+}
+```
+
+A `404` for a job Guardian submitted ends that prediction as failed.
+
+Guardian allows a predict call (sync, or async submit plus polling) **30 minutes** by default.
 
 ---
 
@@ -235,9 +198,9 @@ Returns container logs.
 
 | Metric | Requirement |
 |--------|-------------|
-| Inference time | Complete within the site predict timeout (default **30 minutes**). Use async predict for long-running studies. |
+| Inference time | Complete within the predict timeout (default **30 minutes**). Hosted endpoints can use async predict for long-running studies. |
 | Memory | Size the container to the model; 8 GB is a common minimum for 2D models |
-| Health check | < 5 seconds |
+| Readiness | `GET /icd10-mapping` answers within 5 seconds once the model is loaded |
 
 ---
 
@@ -249,54 +212,50 @@ Guardian Pro integrates directly with your PACS system, allowing radiologists to
 
 ## Button Manual Trigger
 
-### Flag Case API Endpoints
+### Flag Case deep link
 
-#### Deep Link — Create
-
-This endpoint creates a flagged case and redirects the user to the Guardian Pro interface.
+A button in your PACS opens this link in the radiologist's browser. Guardian finds the study, identifies the radiologist and opens the **Flag Case** tab of the Guardian dashboard, where they flag the case for peer review.
 
 **Endpoint**
 
-Behind Traefik (TLS): `https://<GUARDIAN_DOMAIN>`
-
 ```
-GET /flag-case?accession={accession}&user_name={user_name}
+GET https://<your Guardian address>/flag-case?accession={accession}&user_name={user_name}
 ```
 
 **Parameters**
 
 | Parameter | Type | Description | Required |
 |-----------|------|-------------|----------|
-| `accession` | string | Accession number of the study to flag | Yes |
-| `user_name` | string | Username or identifier of the radiologist flagging the case | Yes |
+| `accession` | string | Accession number of the study to flag. Without it, the radiologist can look the study up after opening the page. | No (recommended) |
+| `user_name` | string | Who is flagging: their work email, their reporting-system user ID, or their exact full name. Without it, the radiologist signs in. | No (recommended) |
 
 **Example**
 
 ```
-GET https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith
+https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith
 ```
 
-**Response**
+**Security**
 
-The endpoint opens in a web browser and redirects the user to the Guardian Pro viewer where they can:
-- Review the flagged study
-- Add comments or notes
-- Submit the case for peer review
+- The button works without a separate sign-in **only from your organization's registered network ranges** (your web access ranges, set with Zauron). No button link works while no ranges are set, and requests from other addresses must sign in.
+- A button click opens that one case only. It doesn't sign the radiologist in to the rest of Guardian.
+- Requests are rate-limited.
+- Guardian can be shown inside another application's page only when that site is on your embedding list.
 
-**PACS Button Configuration**
+**PACS button configuration**
 
-Configure your PACS to add a custom button with the following behavior:
-1. Extract the current study's accession number
-2. Extract the current user's username
-3. Open URL in default web browser: `https://<GUARDIAN_DOMAIN>/flag-case?accession={accession}&user_name={user_name}`
+Configure your PACS to add a custom button that:
+1. reads the current study's accession number;
+2. reads the current user's reporting-system ID or work email;
+3. opens `https://<your Guardian address>/flag-case?accession={accession}&user_name={user_name}` in the default web browser.
 
-**User Experience**
+**User experience**
 
-When a radiologist clicks the button in their PACS application:
-1. Their default web browser opens (or a new tab if browser is already open)
-2. Browser navigates to the Guardian Pro interface with the study pre-loaded
-3. Radiologist can flag the case and add relevant notes
-4. Radiologist can return to their PACS workflow
+When a radiologist clicks the button in their PACS:
+1. their browser opens a new tab;
+2. the Guardian Flag Case tab opens with the study selected;
+3. they flag the case and add notes;
+4. they return to their PACS workflow.
 
 ---
 
@@ -311,32 +270,28 @@ Use DICOM connectivity (C-FIND / C-MOVE / C-STORE) for study access, and the **F
 ## Guardian Model API Testing
 
 ```bash
-# Health check
-curl http://localhost:8000/health-check
+# Readiness and mappings
+curl http://localhost:8000/icd10-mapping
 
 # Synchronous prediction (.tar.gz)
 curl -X POST http://localhost:8000/predict \
   -F "study=@study.tar.gz" \
   -F "conf_threshold=0.3"
 
-# Asynchronous prediction (when advertised on /health-check)
+# Asynchronous prediction (hosted endpoints that advertise it on /health-check)
+curl http://localhost:8000/health-check
 curl -X POST http://localhost:8000/predict/async \
   -F "study=@study.tar.gz" \
   -F "conf_threshold=0.3"
-
-# Get mappings
-curl http://localhost:8000/icd10-mapping
-
-# Logs
-curl http://localhost:8000/logging
+curl http://localhost:8000/predict/jobs/<job_id>
 ```
 
 ---
 
 ## Guardian Pro PACS Integration Testing
 
-```bash
-# Test flag case endpoint (replace with your domain and parameters)
-curl "https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith"
-```
+From a computer inside your registered network ranges, open the link in a browser:
 
+```
+https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith
+```

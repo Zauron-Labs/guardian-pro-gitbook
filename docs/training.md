@@ -4,7 +4,7 @@
 
 Guardian Pro is designed for minimal training requirements, with most radiologists familiar with PACS-based workflows. We provide comprehensive training resources to ensure smooth adoption and optimal utilization.
 
-To get acquainted with the system, [click here to see a sandbox version of the software](http://20.65.224.246/expo).
+To see Guardian Pro with sample cases, ask your Zauron representative for a demo account.
 To watch a training video, [click here to see a video tutorial](https://www.youtube.com/watch?v=3mWilwLofS8).
 
 ### Available Resources
@@ -21,14 +21,14 @@ Guardian Pro supports multiple user roles with specific permissions and responsi
 |------|-------------|----------------|----------------------------|-----------------------------|-----------------------------|------------------|
 | **Trainee**<br/>(Student/Resident/Fellow) | Medical trainees learning radiology through case review and educational content | Optional | Yes | No | No | Yes |
 | **Radiologist** | Licensed radiologists performing peer review and quality assurance | Yes | Yes | No | No | Yes |
-| **Rad-Champion** | Senior radiologist responsible for quality assurance and critical case handling | Yes | Yes | Yes | No | Yes |
+| **Champion** | Senior radiologist responsible for quality assurance and critical case handling | Yes | Yes | Yes | No | Yes |
 | **Admin** | Administrative user managing compliance reporting and system oversight | No | No | No | Yes | Yes |
 
 ### Role Responsibilities
 
 - **Trainees** receive educational cases and optional peer review assignments to build experience
 - **Radiologists** perform standard peer review workflows and receive educational content
-- **Rad-Champions** handle critical quality issues and oversee the peer review process
+- **Champions** handle critical quality issues and oversee the peer review process
 - **Admins** monitor compliance metrics and generate required documentation reports
 
 ## Training Timeline

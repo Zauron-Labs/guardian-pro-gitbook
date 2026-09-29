@@ -4,16 +4,26 @@ This documentation provides comprehensive guidance for Guardian Pro, an AI-enric
 
 ## Getting Started
 
-- [Installation Guide](docs/installation.md)
-- [Options](docs/options.md)
 - [Introduction](docs/introduction.md)
+- [SaaS Onboarding](docs/saas-onboarding.md)
+- [Dedicated Installation](docs/installation.md)
+- [Options](docs/options.md)
+
+## Integrations
+
+- [HL7 Report Interface](docs/integrations/hl7.md)
+- [API Reference](docs/api_reference.md)
 
 ## Core Features
 
 - [AI Models](docs/models.md)
 - [Compliance & Accreditation](docs/compliance.md)
 - [Security](docs/security.md)
-- [API Reference](docs/api_reference.md)
+
+## DataForge
+
+- [Overview](docs/dataforge/overview.md)
+- [Python SDK](docs/dataforge/sdk.md)
 
 ## Support & Resources
 

@@ -8,7 +8,7 @@ Guardian Pro is a comprehensive AI-powered platform designed to enhance peer rev
 
 ### AI-Enriched Peer Review
 - **Intelligent Case Selection**: Uses advanced algorithms to identify studies most likely to have quality concerns
-- **Automated Workflow**: Seamlessly integrates with existing PACS and reporting systems, including PowerScribe, HL7, and FHIR
+- **Automated Workflow**: Seamlessly integrates with existing PACS and reporting systems, including PowerScribe and HL7 report feeds
 - **Streamlined Process**: Reduces manual effort while ensuring comprehensive coverage
 
 ### Compliance & Accreditation
@@ -27,6 +27,8 @@ Guardian Pro is a comprehensive AI-powered platform designed to enhance peer rev
 - **Expert Assistance**: Our team helps ensure your models integrate seamlessly
 
 ### AI Assurance & Monitoring
+- **Model Zoo**: License AI models and control which procedures they run on
+- **Structured Assessments**: Measure a model against radiologist ground truth on your own studies, in [DataForge](dataforge/overview.md)
 - **Performance Tracking**: Monitor how your AI models perform on real clinical data
 - **Quality Metrics**: Gain insights into model accuracy and reliability
 - **Continuous Improvement**: Use data-driven insights to refine your AI implementations
@@ -42,6 +44,6 @@ Guardian Pro is designed for:
 ## Why Choose Guardian Pro?
 
 - **Minimal Training Required**: Most radiologists are already familiar with PACS-based workflows
-- **Flexible Deployment**: Choose Azure, AWS, Google, or Self-hosted
+- **Flexible Deployment**: Zauron-hosted [SaaS](saas-onboarding.md), or a [dedicated installation](installation.md) in your own Azure, AWS or Google cloud or data center
 - **Proven Results**: Comprehensive compliance support with optional expert radiologist services
 - **Future-Ready**: Designed to evolve with emerging AI technologies and regulatory requirements
