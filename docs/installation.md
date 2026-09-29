@@ -28,7 +28,7 @@ Before installing Guardian Pro, ensure you have:
 - **Network**: Ability to whitelist CIDRs and configure firewall rules for DICOM, HTTPS, SQL Server, and outbound image pulls. Cloud types join an **existing** VNet/VPC; Self-hosted uses your LAN or private cloud network
 - **PACS integration**: Access to your Picture Archiving and Communication System for C-FIND, C-MOVE, and/or C-STORE, plus the PACS CIDR blocks for firewall rules
 - **Reporting system access**: PowerScribe (web API or SQL Server database) or an HL7 v2 report feed, plus the reporting-system CIDR blocks
-- **LLM**: **Llama 4 Scout**, used to read reports. On AWS it runs in Amazon Bedrock in your account, reached through a private VPC endpoint. On Azure and Google, Zauron provides an endpoint and key for your installation
+- **LLM**: **Llama 4 Scout**, used to read reports. It runs privately in the Guardian VPC / resource group in your cloud: on AWS, Amazon Bedrock in your account behind a VPC endpoint. Report text never leaves your network
 - **First administrators**: name and work email of at least one person who will administer Guardian
 - **DNS and TLS**: two host names in your domain, one for Guardian and one for Zauron's operator console, with DNS records and a certificate covering both (or Let's Encrypt)
 - **PostgreSQL database**: External or cloud-hosted PostgreSQL 13 or later (cloud Terraform provisions PostgreSQL 16 with private access)
@@ -62,7 +62,7 @@ Alternatively, copy the table below into your preferred spreadsheet application.
 | First administrators | [names and work emails] | N/A | No | At least one |
 | Sign-in method | [SSO issuer / LDAP server / email links] | N/A | No | Secrets exchanged securely |
 | Outbound: Zauron container registry | zauron.azurecr.io | 443 | No | Registry credentials issued by Zauron for this installation |
-| Outbound: LLM endpoint | [Bedrock VPC endpoint on AWS; provided by Zauron on Azure and Google] | 443 | No | Llama 4 Scout |
+| LLM endpoint | [private endpoint in the Guardian VPC / resource group; Bedrock VPC endpoint on AWS] | 443 | No | Llama 4 Scout |
 
 ### CSV Format (Copy & Paste)
 
@@ -86,7 +86,7 @@ Reporting system,[PowerScribe host or interface engine],443 / 1433 / 2575,No,Ser
 First administrators,[names and work emails],N/A,No,At least one
 Sign-in method,[SSO issuer / LDAP server / email links],N/A,No,Secrets exchanged securely
 Outbound: Zauron container registry,zauron.azurecr.io,443,No,Registry credentials issued by Zauron for this installation
-Outbound: LLM endpoint,[Bedrock VPC endpoint on AWS; provided by Zauron on Azure and Google],443,No,Llama 4 Scout
+LLM endpoint,[private endpoint in the Guardian VPC / resource group; Bedrock VPC endpoint on AWS],443,No,Llama 4 Scout
 ```
 
 **Instructions:**
@@ -120,8 +120,8 @@ These apply to every installation type.
 ### LLM Endpoint Requirements
 - **Model**: **Llama 4 Scout**
 - **AWS**: Amazon Bedrock in your account, through a private VPC endpoint that the Terraform module creates. Guardian uses the VM's instance role, so there is no key.
-- **Azure and Google**: an endpoint and key issued for your installation only, so it can be rotated or revoked on its own
-- **Network**: The Guardian VM must reach the endpoint over HTTPS (private endpoint preferred)
+- **Azure and Google**: a private Llama 4 Scout endpoint in the Guardian resource group / VPC, with a key issued for your installation only, so it can be rotated or revoked on its own
+- **Network**: private only. The endpoint sits next to the Guardian VM, so report text stays in your network
 
 ### Network and Security Requirements
 
@@ -142,7 +142,7 @@ These apply to every installation type.
 | Customer PACS | Site DICOM ports (commonly `104` and `11112`); Guardian SCU source pool typically `11200`–`12000` | C-FIND / C-MOVE (`GUARDIAN_SCU`) |
 | PowerScribe | `443` (web API) or SQL Server `1433` | Report ingestion |
 | `zauron.azurecr.io` | `443` | Pull Guardian platform images and supported AI model containers |
-| LLM endpoint | `443` | Report reading (Bedrock VPC endpoint on AWS) |
+| LLM endpoint (private, in the Guardian VPC / resource group) | `443` | Report reading (Bedrock VPC endpoint on AWS) |
 | Email service | `443` / `587` | Assignment emails |
 | PostgreSQL | `5432` | Application database (private) |
 
@@ -160,7 +160,7 @@ Provide before install:
 | Compute placement | Unused CIDR for a new Guardian subnet (example `10.0.100.0/24`) |
 | Database placement | Room for a second subnet in the same VNet (PostgreSQL Flexible Server private access) |
 | PACS / reporting / admin CIDRs | Allowlists for DICOM, reporting, and SSH |
-| LLM | Zauron provides the Llama 4 Scout endpoint and key for your installation |
+| LLM | Nothing to provide: a private Llama 4 Scout endpoint is set up in the Guardian resource group / VPC |
 
 The Azure Terraform module deploys the VM, private PostgreSQL, disks, and NSG into the existing VNet. A public IP is created only when admin CIDRs are set. Cloud identity uses a system-assigned managed identity.
 
@@ -194,7 +194,7 @@ Provide before install:
 | Compute placement | VM subnet with unused address space |
 | Database placement | Private Cloud SQL (PostgreSQL) reachable from the VM |
 | PACS / reporting / admin CIDRs | Firewall allowlists |
-| LLM | Zauron provides the Llama 4 Scout endpoint and key for your installation |
+| LLM | Nothing to provide: a private Llama 4 Scout endpoint is set up in the Guardian resource group / VPC |
 
 ## Self-hosted
 
@@ -209,46 +209,47 @@ Provide before install:
 | VM | Ubuntu host with the compute and disk sizes above |
 | Network | LAN/VLAN description and firewall rules matching the inbound/outbound tables |
 | PACS / reporting / admin CIDRs | Allowlists for DICOM, reporting, and SSH |
-| LLM | Zauron provides the Llama 4 Scout endpoint and key for your installation (reachable from the VM) |
+| LLM | A private Llama 4 Scout endpoint on your network, reachable from the VM (set up with Zauron) |
 
 ## Network Diagram
 
-Everything runs inside your network. Guardian needs only two outbound HTTPS connections: Zauron's container registry, for application and model updates, and the LLM that reads reports. On AWS the LLM is Amazon Bedrock in your own account, reached through a private VPC endpoint.
+Everything Guardian needs runs inside your network. The Guardian VPC or resource group in your cloud holds the Guardian VM, the PostgreSQL database and a private LLM endpoint (Amazon Bedrock behind a VPC endpoint on AWS), so studies, reports and report text stay with you. The only service outside your network is Zauron's container registry: Guardian pulls application and model updates from it over outbound HTTPS.
 
 ```mermaid
 flowchart TB
-    subgraph TOP["Your network: users and clinical systems"]
-        direction LR
-        USERS["Users<br/>browser and email links"]
-        PACS["PACS"]
-        RPT["Reporting system<br/>PowerScribe or HL7 engine"]
+    subgraph NET["Your network and cloud account"]
+        direction TB
+        subgraph TOP[" "]
+            direction LR
+            USERS["Users<br/>browser and email links"]
+            PACS["PACS"]
+            RPT["Reporting system<br/>PowerScribe or HL7 engine"]
+        end
+        subgraph GVPC["Guardian VPC / resource group"]
+            direction LR
+            subgraph VM["Guardian Pro VM"]
+                direction TB
+                WEB["Web entry, TLS<br/>Dashboard · Viewer · DataForge"]
+                APP["Guardian application"]
+                MODELS["AI model containers"]
+            end
+            DB[("PostgreSQL<br/>private")]
+            LLM["LLM endpoint, private<br/>Llama 4 Scout"]
+        end
     end
-
-    subgraph VM["Guardian Pro VM, in your network"]
-        direction LR
-        WEB["Web entry, TLS<br/>Dashboard · Viewer · DataForge"]
-        APP["Guardian application"]
-        MODELS["AI model containers"]
-    end
-
-    subgraph BOTTOM[" "]
-        direction LR
-        DB[("PostgreSQL<br/>your network, private")]
-        REG["Zauron container registry<br/>outbound HTTPS 443"]
-        LLM["LLM · Llama 4 Scout<br/>outbound HTTPS 443<br/>Bedrock VPC endpoint on AWS"]
-    end
+    REG["Zauron container registry<br/>the only service outside your network"]
 
     USERS -->|"HTTPS 443"| WEB
     PACS <-->|"DICOM"| APP
     RPT -->|"PowerScribe · SQL · HL7"| APP
     APP -->|"study images"| MODELS
     APP -->|"5432 · TLS"| DB
-    APP -->|"image pulls"| REG
     APP -->|"report text"| LLM
+    REG -->|"image pulls · HTTPS 443, outbound from Guardian"| APP
 
-    style BOTTOM fill:none,stroke:none
+    style TOP fill:none,stroke:none
     classDef ext fill:#f1f5f9,stroke:#64748b,stroke-dasharray: 4 3
-    class REG,LLM ext
+    class REG ext
 ```
 
 Users reach Guardian in two ways:
@@ -337,11 +338,11 @@ Guardian ingests finalized reports using one or more of these clients:
 
 Allow the Guardian VM IP on the reporting host. Give your Zauron representative the endpoint URL and a service account (password over a secure channel). For HL7, share the [HL7 Report Interface](integrations/hl7.md) with your interface team.
 
-#### 5. Allow outbound access to Zauron's container registry and the LLM
+#### 5. Allow outbound access to Zauron's container registry
 
 The VM must pull images from Zauron's container registry (`zauron.azurecr.io`): the Guardian application and the AI models you license. Zauron issues registry credentials for your installation only.
 
-The VM must also reach the LLM endpoint over HTTPS.
+The VM must also reach the private LLM endpoint in the Guardian VPC / resource group over HTTPS.
 
 #### 6. Zauron deploys the Guardian Pro container stack
 
@@ -381,7 +382,7 @@ Guardian has no shared passwords. Your first administrators sign in with a one-t
 
 ### LLM Endpoint Problems
 - **Symptom**: Report structuring does not run, or LLM worker errors in logs
-- **Solution**: Confirm outbound HTTPS to the LLM endpoint (on AWS, the Bedrock VPC endpoint and the VM's instance role)
+- **Solution**: Confirm the VM reaches the private LLM endpoint over HTTPS (on AWS, the Bedrock VPC endpoint and the VM's instance role)
 - **Debug**: From the VM, test HTTPS to the LLM endpoint
 
 ### Email Delivery Problems
