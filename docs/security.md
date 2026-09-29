@@ -14,6 +14,27 @@ This certification demonstrates that Guardian Pro meets the stringent security r
 - **Authorization**: Formal approval to process sensitive state agency data
 - **Continuous Monitoring**: Ongoing security oversight and compliance verification
 
+## Access control
+
+- **Individual accounts only.** Every person signs in as themselves, through single sign-on (OIDC), LDAP / Active Directory, or a one-time link sent to their work email. There are no shared or default passwords, including for administrators.
+- **Roles.** Admin, Champion, Radiologist and Trainee, assigned in Guardian or taken from your directory groups. Access is re-checked as people use Guardian, so a removed user or changed role takes effect promptly.
+- **Assignment links** that radiologists receive by email open only the assigned cases and expire.
+- **Network restrictions.** Access can be limited to your organization's network ranges. The no-login Flag Case button from your PACS works only from those ranges and is rate-limited.
+- **Embedding.** Only sites you list can show Guardian inside their pages.
+- **Zauron support access** to your site is time-limited and recorded in your audit log.
+
+## Data protection
+
+- **In transit:** TLS 1.2 or newer for all web traffic. SaaS integrations with your network use an IPsec site-to-site VPN, or mutual TLS for direct HL7 feeds. Database connections use TLS.
+- **At rest:** databases, disks and storage are encrypted. Integration secrets such as service-account passwords are stored encrypted.
+- **Images:** DICOM private tags are removed from the copies Guardian keeps. Study identifiers and accession numbers are kept so your team can locate the original study.
+- **Logs:** patient medical record numbers are never written to logs.
+- **Customer separation (SaaS):** each customer has its own database, storage area and web address. See [SaaS Onboarding](saas-onboarding.md#data-protection).
+
+## Audit
+
+Each site keeps an append-only audit log of sign-ins and failed sign-ins, study views, exports, AI processing, review submissions and administrative changes. Each entry records who acted, their role and the source address.
+
 ## Questions
 
 For security-related inquiries or to request our security documentation, contact our team at [security@zauronlabs.com](mailto:security@zauronlabs.com).

@@ -1,16 +1,18 @@
-Component,Username,Password,Endpoint/Host,Port,Complete (Yes/No),Notes
-Installation type,N/A,N/A,Azure / AWS / Google / Self-hosted,N/A,No,Select one
-VM SSH Access,zauron,N/A,[VM private IP],22,No,SSH key; user zauron with sudo; restrict to admin CIDRs
-Existing VNet / VPC,N/A,N/A,[VNet VPC or LAN name/ID],N/A,No,Required for Azure AWS and Google; describe LAN for Self-hosted
-Guardian subnet CIDR,N/A,N/A,[unused CIDR e.g. 10.0.100.0/24],N/A,No,Must not overlap existing subnets
-PACS CIDRs,N/A,N/A,[PACS subnet CIDRs],104 / 11112 / [site],No,Used for NSG / security-group rules
-Reporting CIDRs,N/A,N/A,[PowerScribe / HL7 / FHIR CIDRs],443 / 1433 / [MLLP],No,HTTPS SQL Server and optional HL7
-Admin CIDRs,N/A,N/A,[office / jump-host CIDRs],22,No,SSH allowlist
-PostgreSQL Database,[db_username],[db_password],[private DB host],5432,No,Version 13+ (Terraform uses 16); database name guardian_pro; SSL
-Guardian DICOM SCP,N/A,N/A,[VM IP],4000,No,AE Title GUARDIAN_SCP
-Guardian Dashboard,N/A,N/A,[VM IP or domain],443 / 8090,No,HTTPS via Traefik; dashboard also on 8090
-Guardian Viewer,N/A,N/A,[VM IP or domain],80 / 443,No,HTTPS required
-PACS (remote SCP),N/A,N/A,[PACS host],[PACS port],No,Remote AE Title (site-specific)
-Reporting system,[username],[password],[PowerScribe / HL7 / FHIR host],443 / [MLLP],No,PowerScribe API HL7 SQL Server or Epic FHIR
-LLM endpoint (Llama Scout),[provided],[provided],[Llama Scout endpoint],443,No,Customer tenant or Zauron tenant
-Zauron Azure Container Registry,[provided by Zauron],[provided by Zauron],zauron.azurecr.io,443,No,Outbound pull of platform and model images
+Component,Endpoint/Host,Port,Complete (Yes/No),Notes
+Installation type,Azure / AWS / Google / Self-hosted,N/A,No,Select one
+VM SSH access,[VM private IP],22,No,SSH key for user zauron with sudo; restrict to admin CIDRs
+Existing VNet / VPC,"[VNet, VPC, or LAN name/ID]",N/A,No,"Required for Azure, AWS and Google; describe the LAN for Self-hosted"
+Guardian subnet CIDR,"[unused CIDR, e.g. 10.0.100.0/24]",N/A,No,Must not overlap existing subnets
+PACS CIDRs,[PACS subnet CIDRs],104 / 11112 / [site],No,Used for firewall rules
+Reporting CIDRs,[PowerScribe / interface engine CIDRs],443 / 1433 / 2575,No,PowerScribe web API or SQL Server; HL7 feed into Guardian
+Admin CIDRs,[office / jump-host CIDRs],22,No,SSH allowlist
+Web access CIDRs,[user network CIDRs],443,No,Who may open Guardian in a browser
+PostgreSQL database,[private DB host],5432,No,Version 13+ (Terraform uses 16); database guardian_pro; SSL; credentials exchanged securely
+Guardian DICOM SCP,[VM IP],4000,No,AE title GUARDIAN_SCP
+Guardian web address and console address,[guardian.yourdomain] and [console.guardian.yourdomain],443,No,"DNS records to the VM; certificate covering both, or Let's Encrypt"
+PACS (remote SCP),[PACS host],[PACS port],No,Remote AE title (site-specific)
+Reporting system,[PowerScribe host or interface engine],443 / 1433 / 2575,No,Service account password exchanged securely
+First administrators,[names and work emails],N/A,No,At least one
+Sign-in method,[SSO issuer / LDAP server / email links],N/A,No,Secrets exchanged securely
+Outbound: Zauron container registry,zauron.azurecr.io,443,No,Registry credentials issued by Zauron for this installation
+Outbound: LLM endpoint,[Bedrock VPC endpoint on AWS; provided by Zauron on Azure and Google],443,No,Llama 4 Scout

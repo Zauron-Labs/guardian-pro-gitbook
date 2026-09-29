@@ -1,0 +1,28 @@
+Section,Item,Your answer,Notes
+Organization,Organization name,,
+Organization,Short name for your Guardian web address,,Lowercase letters digits and hyphens
+Organization,Time zone,,IANA name such as America/Chicago
+Organization,IT contact email,,
+Administrators,First administrator (name and work email),,At least one; they add all other users
+Administrators,Second administrator (name and work email),,Optional
+Sites,Site 1 name,,One row per campus or location
+Sites,Site 1 PACS AE title / IP address / DICOM port,,Internal address reached through the VPN
+Sites,Site 1 PACS mode,,Pull (standard) or Push
+Sites,Site 1 report source,,PowerScribe web API / HL7 v2 / PowerScribe database (SQL Server)
+Sites,Site 1 report source address and port,,Internal address reached through the VPN; HL7 feeds connect to Guardian instead
+Sites,Site 1 report source service account (username),,Send the password over a secure channel agreed with Zauron
+Sites,Site 2 (repeat the site rows),,Optional
+Connectivity,Connection type,,VPN (standard) or Direct (HL7 only)
+Connectivity,VPN gateway public IP address,,
+Connectivity,Internal addresses Guardian must reach (PACS / reporting / directory),,IP addresses or subnets
+Connectivity,Firewall rules in place (UDP 500 and 4500),,See SaaS Onboarding > Firewall rules
+Connectivity,Direct only: public source IP ranges of the interface engine,,
+Connectivity,Direct only: CA certificate that signs the engine's client certificate,,PEM; the CA certificate only
+Sign-in,Sign-in method,,SSO (OIDC) / LDAP / email sign-in links
+Sign-in,SSO: identity provider and issuer URL,,Client secret over a secure channel
+Sign-in,LDAP: server address / base DN / bind account,,Bind password over a secure channel
+Sign-in,Roles from directory groups or set in Guardian,,Group names for Admin / Champion / Radiologist / Trainee
+Access,Web access ranges (public IP ranges of your users),,Strongly recommended
+Access,Sites allowed to embed Guardian (iframe),,Optional
+Models,AI models licensed,,From your agreement
+Options,Peer review options worksheet,,See Options

@@ -2,7 +2,7 @@
 
 This page provides a comprehensive configuration worksheet for customizing your Guardian Pro deployment. Complete this worksheet and share it with your Zauron representative to ensure your system is configured to match your organization's peer review policies and workflows.
 
-These values are picker and employer policies. They are applied at install and can later be adjusted in the Guardian dashboard **User Config** tab. Infrastructure settings (PACS AE titles, reporting endpoints, registry, TLS) are collected on the [Installation Guide](installation.md) checklist, not here.
+These values are picker and employer policies. They are applied at install and can later be adjusted in the Guardian dashboard **Admin** tab. Infrastructure settings (PACS AE titles, reporting endpoints, registry, TLS) are collected on the [Installation Guide](installation.md) checklist, not here.
 
 ## Configuration Worksheet
 
@@ -85,6 +85,6 @@ Your configuration will be reviewed and applied during the installation process.
 
 If you have questions about any configuration option or need guidance on optimal settings for your organization:
 
-- **Email**: support@zauronlabs.com
+- **Email**: [service@zauronlabs.com](mailto:service@zauronlabs.com)
 - **Documentation**: Review our [Installation Guide](installation.md) for additional context
 - **Consultation**: Schedule a configuration review call with your Zauron implementation specialist

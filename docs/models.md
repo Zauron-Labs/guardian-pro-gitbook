@@ -6,9 +6,13 @@ Guardian Pro is compatible with purpose-built AI models to identify quality-rele
 
 ## How models are delivered
 
-Supported models ship as Docker images in the **Zauron Azure Container Registry**. The Guardian VM pulls those images into modular containers on your virtual network. Each site enables models through the dashboard Model Zoo (clinical triggering rules live in the model portfolio: modality, body part, CPT, confidence thresholds, and ICD filters).
+Models are **licensed per customer**. A new customer has no models enabled until Zauron enables the ones in its agreement. Your site then decides how each licensed model is used, in the dashboard **Model Zoo**: which procedures trigger it (modality, body part, CPT), its confidence thresholds and which findings count.
 
-Custom models use the same contract. See the [Guardian Model API](api_reference.md) for `.tar.gz` study input, `/health-check`, `/predict`, and optional async predict.
+Guardian runs each model either as a container next to Guardian or as a hosted endpoint in the same cloud region as your Guardian site.
+
+From the Model Zoo, a site admin or champion can also start a [structured assessment](dataforge/overview.md#model-validation-and-structured-assessments) to measure a model on your own studies.
+
+Custom models use the same contract. See the [Guardian Model API](api_reference.md).
 
 ## Model Catalog (Alphabetical by Abnormality Type)
 
