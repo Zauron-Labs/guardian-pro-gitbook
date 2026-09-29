@@ -15,7 +15,7 @@ Download our [Configuration Options Worksheet (CSV)](configuration-options.csv) 
 | Minimum number of cases seen by rads per week | 5 | Minimum weekly case volume threshold for peer review eligibility | |
 | Maximum number of cases seen by rads per week | 10 | Upper limit on weekly peer review assignments per radiologist | |
 | Number of interesting cases seen by rads per week | 5 | AI-flagged cases with educational or clinical significance | |
-| RadPeer threshold for notifying the quality champion | 3b | Score at which quality leadership is automatically alerted | |
+| RadPeer threshold for notifying the quality champion | 2b | Score at which quality leadership is automatically alerted | |
 | Number of cases (in last 3 months) to be qualified to peer review a case | 10 | Minimum recent case volume required to serve as a peer reviewer | |
 | Minimum number of random exams per week | 2 | Baseline random sampling for quality assurance | |
 | Quality Champion | | Designated individual responsible for quality oversight and discrepancy adjudication | |
@@ -41,7 +41,7 @@ Guardian Pro's AI engine identifies cases with unusual findings, teaching value,
 ### Quality Assurance Settings
 
 **RadPeer threshold for notifying the quality champion**
-Uses the standard RadPeer scoring scale (1-4). A score of 3b or higher indicates a clinically significant discrepancy. When this threshold is met, the designated Quality Champion receives automatic notification for review and follow-up.
+Uses the standard RadPeer scoring scale (1-4). A score of 2b or higher indicates a discrepancy that is likely clinically significant. When this threshold is met, the designated Quality Champion receives automatic notification for review and follow-up.
 
 **Number of cases (in last 3 months) to be qualified to peer review a case**
 Ensures peer reviewers have recent, relevant experience. Radiologists must have interpreted at least this many cases in the past 90 days to be eligible as peer reviewers, maintaining expertise currency.
