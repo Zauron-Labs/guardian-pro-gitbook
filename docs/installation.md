@@ -213,51 +213,50 @@ Provide before install:
 
 ## Network Diagram
 
-The diagram below shows a typical installation: PACS and reporting systems are reached from the customer virtual network; users open the dashboard and assignment emails on that network; application and AI model images are pulled from Zauron's container registry.
+Everything runs inside your network. Guardian needs only two outbound HTTPS connections: Zauron's container registry, for application and model updates, and the LLM that reads reports. On AWS the LLM is Amazon Bedrock in your own account, reached through a private VPC endpoint.
 
 ```mermaid
-flowchart LR
-    PACS[PACS Server]
-    REPORT[Reporting Server<br/>PowerScribe / HL7]
-    LLM[LLM<br/>Llama 4 Scout]
-
-    subgraph ZAURON[Zauron Network]
-        REGISTRY[Azure Container Registry]
+flowchart TB
+    subgraph TOP["Your network: users and clinical systems"]
+        direction LR
+        USERS["Users<br/>browser and email links"]
+        PACS["PACS"]
+        RPT["Reporting system<br/>PowerScribe or HL7 engine"]
     end
 
-    subgraph VNET[Customer Virtual Network<br/>Azure / AWS / Google / Self-hosted]
-        BROWSER[User Browser]
-        EMAIL[User Email]
-        DB[(PostgreSQL Database)]
-        subgraph VM[Guardian Pro Virtual Machine]
-            PROXY[Traefik Reverse Proxy]
-            DASH[Guardian Dashboard]
-            VIEWER[OHIF Viewer]
-            APP[Orchestrator]
-            subgraph MODELS[Modular AI Model Containers]
-                MODEL1[Supported AI Model A]
-                MODEL2[Supported AI Model B]
-                MODELN[Supported AI Model N]
-            end
-        end
+    subgraph VM["Guardian Pro VM, in your network"]
+        direction LR
+        WEB["Web entry, TLS<br/>Dashboard · Viewer · DataForge"]
+        APP["Guardian application"]
+        MODELS["AI model containers"]
     end
 
-    PACS -->|DICOM C-FIND / C-MOVE / C-STORE| APP
-    REPORT -->|PowerScribe / HL7 / SQL| APP
-    LLM -->|HTTPS| APP
-    REGISTRY -->|Pull platform and model images| VM
-    BROWSER -->|HTTPS dashboard and viewer| PROXY
-    EMAIL -->|Assignment links| VIEWER
-    PROXY --> DASH
-    PROXY --> VIEWER
-    APP --> DB
-    APP --> MODELS
+    subgraph BOTTOM[" "]
+        direction LR
+        DB[("PostgreSQL<br/>your network, private")]
+        REG["Zauron container registry<br/>outbound HTTPS 443"]
+        LLM["LLM · Llama 4 Scout<br/>outbound HTTPS 443<br/>Bedrock VPC endpoint on AWS"]
+    end
+
+    USERS -->|"HTTPS 443"| WEB
+    PACS <-->|"DICOM"| APP
+    RPT -->|"PowerScribe · SQL · HL7"| APP
+    APP -->|"study images"| MODELS
+    APP -->|"5432 · TLS"| DB
+    APP -->|"image pulls"| REG
+    APP -->|"report text"| LLM
+
+    style BOTTOM fill:none,stroke:none
+    classDef ext fill:#f1f5f9,stroke:#64748b,stroke-dasharray: 4 3
+    class REG,LLM ext
 ```
 
-Users interface with Guardian Pro in two ways:
+Users reach Guardian in two ways:
 
-1. **Dashboard** in the browser (`https://<your-domain>/`)
-2. **Assignments** via email, which open the OHIF viewer (`https://<your-domain>/viewer/`)
+1. **In the browser**: the dashboard (`https://<your-domain>/`) and DataForge (`https://<your-domain>/dataforge/`)
+2. **From assignment emails**: links that open the case in the viewer (`https://<your-domain>/viewer/`)
+
+The ports behind each connection are listed in [Network and Security Requirements](#network-and-security-requirements).
 
 ## Installation Steps
 
