@@ -112,7 +112,7 @@ Guardian has no shared passwords. Every person signs in as themselves, with one 
 - **LDAP / Active Directory**, over the VPN only: LDAPS or STARTTLS, a bind account, the search base and your directory's CA certificate.
 - **Email sign-in links**: no directory. Administrators add users in Guardian, and users sign in with a one-time link sent to their work email.
 
-With SSO or LDAP, roles can follow your directory groups, or your administrators can set them in Guardian. The roles are **Admin**, **Champion**, **Radiologist** and **Trainee** (see [Training & Onboarding](training.md)). Your first administrators are named at intake. They add everyone else.
+With SSO or LDAP, roles can follow your directory groups, or your administrators can set them in Guardian. The standard roles are **Admin**, **Champion**, **Radiologist** and **Trainee**, and your administrators can add roles of their own, such as **Technologist**, each with its own permissions, tabs and directory group (see [Custom roles](training.md#custom-roles)). Your first administrators are named at intake. They add everyone else.
 
 Radiologists receive their review assignments by email. Ask Zauron for the sending address so you can allow it in your mail filters.
 

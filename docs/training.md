@@ -31,6 +31,18 @@ Guardian Pro supports multiple user roles with specific permissions and responsi
 - **Champions** handle critical quality issues and oversee the peer review process
 - **Admins** monitor compliance metrics and generate required documentation reports
 
+### Custom roles
+
+Admin and Demo are built in. Every other role, including Champion, Radiologist and Trainee, can be edited, and your administrators can add roles of their own (for example **Technologist**) under **Admin → Roles**. For each role you choose:
+
+- **Permissions**: dashboard access, editing quality measures, starting structured assessments, adjudicating flagged cases, working Community Watch cases, being a peer-review reassignment target, and receiving the monthly compliance package.
+- **Dashboard tabs**: each role has its own row in **Settings → Tab Visibility**. A new role starts with every tab hidden.
+- **Directory groups**: with SSO or LDAP, any role can be mapped to a group in your directory.
+- **Notifications**: a notification rule can also alert the members of chosen roles, for example sending technical-error reviews to Technologists. People in a role without the "adjudicate flagged cases" permission get a read-only link to the case.
+- **Email wording**: each role can have its own version of each notification email; otherwise the default is used.
+
+Someone with several roles gets the permissions and tabs of all of them. Disabling a role removes its access immediately; a role can be deleted only once nobody holds it.
+
 ## Training Timeline
 
 Our structured 3-week onboarding process ensures you get up and running quickly while maintaining quality and compliance:

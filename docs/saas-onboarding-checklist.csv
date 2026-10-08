@@ -21,7 +21,7 @@ Connectivity,Direct only: CA certificate that signs the engine's client certific
 Sign-in,Sign-in method,,SSO (OIDC) / LDAP / email sign-in links
 Sign-in,SSO: identity provider and issuer URL,,Client secret over a secure channel
 Sign-in,LDAP: server address / base DN / bind account,,Bind password over a secure channel
-Sign-in,Roles from directory groups or set in Guardian,,Group names for Admin / Champion / Radiologist / Trainee
+Sign-in,Roles from directory groups or set in Guardian,,Group names for Admin / Champion / Radiologist / Trainee and any custom roles (e.g. Technologist)
 Access,Web access ranges (public IP ranges of your users),,Strongly recommended
 Access,Sites allowed to embed Guardian (iframe),,Optional
 Models,AI models licensed,,From your agreement
