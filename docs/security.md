@@ -17,7 +17,7 @@ This certification demonstrates that Guardian Pro meets the stringent security r
 ## Access control
 
 - **Individual accounts only.** Every person signs in as themselves, through single sign-on (OIDC), LDAP / Active Directory, or a one-time link sent to their work email. There are no shared or default passwords, including for administrators.
-- **Roles.** Admin, Champion, Radiologist and Trainee, assigned in Guardian or taken from your directory groups. Access is re-checked as people use Guardian, so a removed user or changed role takes effect promptly.
+- **Roles.** Admin and Demo are built in; Champion, Radiologist, Trainee and any roles your administrators add carry only the permissions configured for them (see [Custom roles](training.md#custom-roles)). Roles are assigned in Guardian or taken from your directory groups, and creating, editing or deleting a role is recorded in the audit log. Access is re-checked as people use Guardian, so a removed user or changed role takes effect promptly.
 - **Assignment links** that radiologists receive by email open only the assigned cases and expire.
 - **Network restrictions.** Access can be limited to your organization's network ranges. The no-login Flag Case button from your PACS works only from those ranges and is rate-limited.
 - **Embedding.** Only sites you list can show Guardian inside their pages.
