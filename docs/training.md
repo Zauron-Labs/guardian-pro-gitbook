@@ -39,7 +39,7 @@ Admin and Demo are built in. Every other role, including Champion, Radiologist a
 - **Dashboard tabs**: each role has its own row in **Settings → Tab Visibility**. A new role starts with every tab hidden.
 - **Directory groups**: with SSO or LDAP, any role can be mapped to a group in your directory.
 - **Notifications**: a notification rule can also alert the members of chosen roles, for example sending technical-error reviews to Technologists. People in a role without the "adjudicate flagged cases" permission get a read-only link to the case.
-- **Email wording**: each role can have its own version of each notification email; otherwise the default is used.
+- **Scheduled email wording**: each role can have its own version of the scheduled assignments email; everyone else gets the default. Self-review, champion and original-author emails have one version each.
 
 Someone with several roles gets the permissions and tabs of all of them. Disabling a role removes its access immediately; a role can be deleted only once nobody holds it.
 
