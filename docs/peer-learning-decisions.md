@@ -6,10 +6,10 @@ For each question, Zauron recommends a **Zauron Gold Standard**. Accept it as-is
 
 ## Decision Worksheet
 
-Download the [Peer Learning Decisions Worksheet (CSV)](peer-learning-decisions.csv). It opens in Excel, Google Sheets or any spreadsheet application.
+Download the [Peer Learning Decisions Worksheet (Excel)](peer-learning-decisions.xlsx). It has a Yes/No drop-down for each decision and a second tab showing where each setting lives in the dashboard. A plain [CSV version](peer-learning-decisions.csv) is also available.
 
 1. **Review** each decision and the Zauron Gold Standard.
-2. **Enter** Yes or No in the "Use Zauron Gold Standard" column. Where you enter No, note your site's policy.
+2. **Choose** Yes or No in the "Use Zauron Gold Standard" column. Where you choose No, describe your site's policy when you return the worksheet.
 3. **Return** the completed worksheet to your Zauron representative, or have your site administrator apply it in the dashboard (see [Where to set it](#where-to-set-it)).
 
 ### The Zauron Gold Standard at a glance
@@ -45,7 +45,7 @@ Peer learning activity counts toward each radiologist's "progress to date" in th
 | Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
 |----------|----------------------|-----------------------------------|------|
 | Should AI drive mistake triage (choose likely discrepancies for review)? | Yes. Production AI models select likely discrepancies for review; new models run in test mode before they affect assignments. | | Spend reviewer time on the cases most likely to hold a learning opportunity. |
-| How confident must an AI model be before a case is shown? | Start each model at a 0.5 display threshold and adjust from review outcomes. | | Enough true findings to be worth reviewing, few enough false alarms to keep radiologists' trust. |
+| How accurate should AI-selected cases be? | Zauron tunes each model's thresholds for an enhanced positive predictive value (PPV) of 0.5: about 1 in 2 AI-selected cases holds a true discrepancy. | | A consistent hit rate across models: enough true findings to be worth reviewing, few enough false alarms to keep radiologists' trust. |
 
 ## Feedback to original authors and escalation
 
@@ -77,7 +77,7 @@ Site administrators apply these decisions in the Guardian dashboard. Most are se
 | What counts as peer learning activity | Admin → Policies → Employers → Edit → **Progress credit** | One checkbox per activity: peer review, manual flag case, interesting-case feedback, interesting case viewed, great call viewed |
 | Cases per week | Admin → Policies → Employers → Edit → **General** | Week Assign Min (5), Week Assign Max (10) |
 | Random cases | Admin → Policies → Employers → Edit → **General** | Random Exams Min (1) |
-| AI-driven triage | Model-Zoo → Model Portfolio → edit model | Active, Test mode, Display threshold |
+| AI-driven triage | Model-Zoo → Model Portfolio → edit model | Active, Test mode, Display threshold (Zauron tunes each model for an enhanced PPV of 0.5) |
 | Potential errors to authors | Admin → Policies → Employers → Edit → **Self-review discrepancy emails** | Enable self-review pathway; then turn on **Self Discrepancy** for each radiologist in Admin → Users |
 | Confirmed errors, champion alerts and Great Calls | Admin → Policies → Employers → Edit → **Notification Rules (Per Response)** | For each response type, choose the recipient (for example, "Original author of exam" or "Original author + domain champion") and whether to email immediately |
 | Who adjudicates | Admin → Users and Admin → Roles | Assign the Champion role, which includes "Adjudicate flagged cases" |
