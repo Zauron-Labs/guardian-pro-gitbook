@@ -2,6 +2,8 @@
 
 This page provides a comprehensive configuration worksheet for customizing your Guardian Pro deployment. Complete this worksheet and share it with your Zauron representative to ensure your system is configured to match your organization's peer review policies and workflows.
 
+Peer learning policy questions (what counts as activity, AI triage, author notification, conferences) are on the [Peer Learning Decisions](peer-learning-decisions.md) worksheet.
+
 These values are picker and employer policies. They are applied at install and can later be adjusted in the Guardian dashboard **Admin** tab. Infrastructure settings (PACS AE titles, reporting endpoints, registry, TLS) are collected on the [Installation Guide](installation.md) checklist, not here.
 
 ## Configuration Worksheet

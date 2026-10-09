@@ -8,6 +8,7 @@ This documentation provides comprehensive guidance for Guardian Pro, an AI-enric
 - [SaaS Onboarding](docs/saas-onboarding.md)
 - [Dedicated Installation](docs/installation.md)
 - [Options](docs/options.md)
+- [Peer Learning Decisions](docs/peer-learning-decisions.md)
 
 ## Integrations
 
