@@ -269,6 +269,17 @@ When a radiologist clicks the button in their PACS:
 
 When nobody is signed in, the Guardian page says so plainly ("Not signed in"), and the Flag Case tab shows who the flag will be credited to.
 
+**Flag Case view**
+
+Zauron sets, for each customer, what the Flag Case tab shows:
+
+| View | Best for | The radiologist sees |
+|------|----------|----------------------|
+| **Full report** | Flagging from PACS or the Guardian dashboard, where the report isn't already open beside the button | The full report text and the peer review options. They can select text in the report to quote it into their comments, marked as a great call or a possible concern. They can also switch to another of the patient's studies if the wrong one was flagged. |
+| **Peer review options only** | A Flag Case button inside your reporting software, where the radiologist already has the report open | Only the peer review determination, Great Call, Technical Issue and comments. Guardian doesn't send the report text or the patient's other studies to the browser. |
+
+Tell Zauron which view you want when you set up the button. You can change it at any time.
+
 ---
 
 ## PACS Worklist Bidirectional Event Sync (retired)
