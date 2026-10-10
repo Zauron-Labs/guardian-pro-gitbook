@@ -9,7 +9,7 @@ Guardian supports both:
 - **Open-source models**, packaged and validated for use with Guardian.
 - **Proprietary models**, including commercial products from AI vendors and models your organization has built.
 
-Every model meets the same [Guardian Model API](api_reference.md), so a model can be added, replaced or compared without changing your workflow. Integrating your own model is a no-cost add-on.
+Every model meets the same [Model API](model-api.md), so a model can be added, replaced or compared without changing your workflow. Integrating your own model is a no-cost add-on.
 
 ## Supported use cases
 
@@ -43,4 +43,4 @@ Need a use case that isn't listed? Contact your Zauron representative. New integ
 
 ## How models run
 
-Guardian runs each model either as a container next to Guardian or as a hosted endpoint in the same cloud region as your Guardian site. See the [Guardian Model API](api_reference.md) for the integration contract.
+Guardian runs each model either as a container next to Guardian or as a hosted endpoint in the same cloud region as your Guardian site. See the [Model API](model-api.md) for the integration contract.

@@ -14,7 +14,8 @@ Guardian Pro revolutionizes radiology quality assurance through intelligent case
 - **[Dedicated Installation](docs/installation.md)** - Run Guardian Pro in your own Azure, AWS, Google or on-premises environment
 - **[Training & Onboarding](docs/training.md)** - Get started with comprehensive training resources
 - **[Compliance & Accreditation](docs/compliance.md)** - Ensure regulatory compliance
-- **[API Reference](docs/api_reference.md)** - Integrate custom AI models and PACS buttons
+- **[Guardian API](docs/guardian-api.md)** - Connect your own viewer, worklist or PACS button to Guardian
+- **[Model API](docs/model-api.md)** - Integrate custom AI models
 - **[DataForge](docs/dataforge/overview.md)** - Label imaging data and validate AI models, in the browser or with the Python SDK
 
 ## Key Features

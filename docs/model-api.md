@@ -1,13 +1,6 @@
-# API Reference
+# Model API
 
-This document covers two distinct API systems within Guardian Pro:
-
-1. **Guardian Model API** — for integrating custom AI models with Guardian Pro
-2. **Guardian Pro PACS Integration API** — for flagging cases from PACS via a browser deep link
-
----
-
-# Guardian Model API
+The Model API is the contract an AI model meets to run in Guardian Pro: a model vendor (or your own team) builds a container or hosted endpoint that answers these requests. For connecting your own systems to Guardian, see the [Guardian API](guardian-api.md).
 
 **Version 1.2** | API specification for Guardian-compatible model containers.
 
@@ -204,81 +197,7 @@ Guardian allows a predict call (sync, or async submit plus polling) **30 minutes
 
 ---
 
-# Guardian Pro PACS Integration API
-
-## Overview
-
-Guardian Pro integrates directly with your PACS system, allowing radiologists to flag cases for peer review in real-time through custom PACS buttons or workflows. When clicked, the button opens a web browser and navigates to the Guardian Pro interface.
-
-## Button Manual Trigger
-
-### Flag Case deep link
-
-A button in your PACS opens this link in the radiologist's browser. Guardian finds the study, identifies the radiologist and opens the **Flag Case** tab of the Guardian dashboard, where they flag the case for peer review.
-
-**Endpoint**
-
-```
-GET https://<your Guardian address>/flag-case?accession={accession}&user_name={user_name}
-```
-
-**Parameters**
-
-| Parameter | Type | Description | Required |
-|-----------|------|-------------|----------|
-| `accession` | string | Accession number of the study to flag. Without it, the radiologist can look the study up after opening the page. | No (recommended) |
-| `user_name` | string | Who is flagging: their work email, their reporting-system user ID, or their exact full name. Without it, the radiologist signs in. | No (recommended) |
-
-**Example**
-
-```
-https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith
-```
-
-**Security**
-
-- The button works without a separate sign-in **only from your organization's registered network ranges** (your web access ranges, set with Zauron). No button link works while no ranges are set, and requests from other addresses must sign in.
-- A button click opens that one case only. It doesn't sign the radiologist in to the rest of Guardian.
-- Requests are rate-limited.
-- Guardian can be shown inside another application's page only when that site is on your embedding list.
-
-**PACS button configuration**
-
-Configure your PACS to add a custom button that:
-1. reads the current study's accession number;
-2. reads the current user's reporting-system ID or work email;
-3. opens `https://<your Guardian address>/flag-case?accession={accession}&user_name={user_name}` in the default web browser.
-
-**User experience**
-
-When a radiologist clicks the button in their PACS:
-1. their browser opens a new tab;
-2. the Guardian Flag Case tab opens with the study selected;
-3. they flag the case and add notes;
-4. they return to their PACS workflow.
-
-**Flag Case view**
-
-Zauron sets, for each customer, what the Flag Case tab shows:
-
-| View | Best for | The radiologist sees |
-|------|----------|----------------------|
-| **Full report** | Flagging from PACS or the Guardian dashboard, where the report isn't already open beside the button | The full report text and the peer review options. They can select text in the report to quote it into their comments, marked as a great call or a possible concern. They can also switch to another of the patient's studies if the wrong one was flagged. |
-| **Peer review options only** | A Flag Case button inside your reporting software, where the radiologist already has the report open | Only the peer review determination, Great Call, Technical Issue and comments. Guardian doesn't send the report text or the patient's other studies to the browser. |
-
-Tell Zauron which view you want when you set up the button. You can change it at any time.
-
----
-
-## PACS Worklist Bidirectional Event Sync (retired)
-
-Bidirectional PACS worklist event sync (`/api/v1/pacs/events/*`) was **retired in April 2026** and is no longer part of Guardian Pro.
-
-Use DICOM connectivity (C-FIND / C-MOVE / C-STORE) for study access, and the **Flag Case** deep link above for radiologist-initiated peer review from PACS. Optional worklist assignment for unreported orders is configured on the Guardian dashboard when enabled for your site — it is not this event-sync API.
-
----
-
-## Guardian Model API Testing
+## Testing
 
 ```bash
 # Readiness and mappings
@@ -295,14 +214,4 @@ curl -X POST http://localhost:8000/predict/async \
   -F "study=@study.tar.gz" \
   -F "conf_threshold=0.3"
 curl http://localhost:8000/predict/jobs/<job_id>
-```
-
----
-
-## Guardian Pro PACS Integration Testing
-
-From a computer inside your registered network ranges, open the link in a browser:
-
-```
-https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith
 ```

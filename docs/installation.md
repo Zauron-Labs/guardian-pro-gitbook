@@ -418,7 +418,7 @@ Guardian has no shared passwords. Your first administrators sign in with a one-t
 
 If you encounter issues during installation:
 
-1. **Documentation**: Check this guide and the [API Reference](api_reference.md)
+1. **Documentation**: Check this guide and the [Guardian API](guardian-api.md) and [Model API](model-api.md)
 2. **Email**: [service@zauronlabs.com](mailto:service@zauronlabs.com)
 3. **Professional Services**: Engage Zauron's implementation team for complex deployments
 
