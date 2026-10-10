@@ -1,11 +1,11 @@
 # Guardian API
 
-The Guardian API connects your own systems to Guardian Pro:
+The Guardian API is for integrating your applications with Guardian Pro:
 
-- **REST API (headless Guardian).** Your viewer, worklist or reporting system reads exams and AI findings and completes peer reviews through Guardian's `/v1` API, without Guardian's screens. In Guardian this is called the **Integration API**.
+- **REST API (headless Guardian).** Your viewer, worklist or reporting system reads exams and AI findings and completes peer reviews through Guardian's `/v1` API, without Guardian's screens.
 - **PACS Flag Case button.** A browser link that a button in your PACS or reporting software opens, so a radiologist can flag a case for peer review.
 
-To have an AI model run inside Guardian, see the [Model API](model-api.md) instead.
+To integrate an AI model, so that it runs inside Guardian, see the [Model API](model-api.md) instead.
 
 ---
 
@@ -15,8 +15,8 @@ To have an AI model run inside Guardian, see the [Model API](model-api.md) inste
 
 The REST API is **off by default** for every site.
 
-1. Ask Zauron to switch on the Integration API for your site. Until it is on, every `/v1` request is refused, whatever key is sent.
-2. A Guardian administrator creates API keys under **Admin → Settings → Integration API keys**.
+1. Ask Zauron to switch on the Guardian API for your site. Until it is on, every `/v1` request is refused, whatever key is sent.
+2. A Guardian administrator creates API keys under **Admin → Settings → Guardian API keys**.
 3. Your integration calls `https://<your Guardian address>/v1/…` with a key.
 
 Zauron can switch the API off again at any time. Keys stay listed, but no request is accepted until it is back on.
