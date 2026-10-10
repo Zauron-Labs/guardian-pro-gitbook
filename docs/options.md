@@ -77,7 +77,7 @@ Peer learning activity counts toward each radiologist's "progress to date" in th
 | Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
 |----------|----------|----------|----------|
 | Should residents and fellows receive the weekly peer learning email? | Yes. Trainees receive the weekly email with interesting cases and Great Calls. | | Bring trainees into the group's learning loop from day one. |
-| Should residents and fellows be assigned peer review cases? | No. Trainees are not assigned review cases or discrepant exams. To include an individual trainee in assigned review (for example, for a Graduate Medical Education quality improvement project), give them a reviewer role instead of the resident / fellow role. | | Protect trainees from unsupervised discrepancy review while allowing structured participation where your program wants it. |
+| How should residents and fellows take part in peer review? | Through Live Watch, not picker assignments. Trainees are not assigned picker cases or discrepant exams; they work the Live Watch page, claiming AI-flagged exams and submitting preliminary reviews that escalate directly to Quality Champions. | | Hands-on discrepancy review for trainees (for example, toward a Graduate Medical Education quality improvement project), with Quality Champions handling every escalation. |
 
 ## Where to set it
 
@@ -98,7 +98,7 @@ Site administrators apply these decisions in the Guardian dashboard. Most are se
 | Conferences | Search → M&M / Discrepancy, Critical Findings, MIPS / Quality | Add cases to the basket and export to PowerPoint |
 | Interesting cases and Great Calls in the weekly email | Admin → Notifications → **Picker emails** | Interesting cases: For You top N (5), Global top N (5). Great calls: maximum to show (5) |
 | Monthly compliance summary | Admin → Notifications → **Alert routing** → Monthly Compliance Email | Enable automatic monthly send; choose recipients |
-| Residents and fellows | Admin → Users and Admin → Roles | Resident / fellow role ("Resident / fellow assignments") or a reviewer role |
+| Residents and fellows | Admin → Roles and Admin → Users | Give trainees a role with "Work Community Watch cases" and "Resident / fellow assignments" (no picker cases), then turn on **Community Watch** for each trainee in Admin → Users |
 
 Interesting cases and Search depend on your Guardian Pro plan. If a setting above is not visible in your dashboard, contact your Zauron representative.
 
