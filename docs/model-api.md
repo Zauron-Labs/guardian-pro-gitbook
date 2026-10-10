@@ -1,6 +1,6 @@
 # Model API
 
-The Model API is the contract an AI model meets to run in Guardian Pro: a model vendor (or your own team) builds a container or hosted endpoint that answers these requests. For connecting your own systems to Guardian, see the [Guardian API](guardian-api.md).
+The Model API is for integrating AI models with Guardian Pro: the contract a model meets to run in Guardian. A model vendor (or your own team) builds a container or hosted endpoint that answers these requests. To integrate your applications (viewer, worklist, reporting system or PACS button) with Guardian, see the [Guardian API](guardian-api.md).
 
 **Version 1.2** | API specification for Guardian-compatible model containers.
 
