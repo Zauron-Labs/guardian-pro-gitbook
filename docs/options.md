@@ -1,89 +1,108 @@
 # Configuration Options
 
-This page provides a comprehensive configuration worksheet for customizing your Guardian Pro deployment. Complete this worksheet and share it with your Zauron representative to ensure your system is configured to match your organization's peer review policies and workflows.
+Before go-live, your quality leadership answers a set of peer learning policy questions: what counts as peer learning, how much each radiologist does each week, how AI is used, who hears about errors, how cases feed conferences and the teaching file, and how trainees take part. Each question maps to a setting in the Guardian dashboard.
 
-These values are picker and employer policies. They are applied at install and can later be adjusted in the Guardian dashboard **Admin** tab. Infrastructure settings (PACS AE titles, reporting endpoints, registry, TLS) are collected on the [Installation Guide](installation.md) checklist, not here.
+For each question, Zauron recommends a **Zauron Gold Standard**. Accept it as-is or write in your own policy. These values are applied at install, and your site administrator can change them later in the Guardian dashboard. Infrastructure settings (PACS AE titles, reporting endpoints, registry, TLS) are collected on the [Installation Guide](installation.md) checklist, not here.
 
 ## Configuration Worksheet
 
-Download our [Configuration Options Worksheet (CSV)](configuration-options.csv) to customize your Guardian Pro settings. This spreadsheet can be imported into Excel, Google Sheets, or any spreadsheet application for easy editing.
+Download the [Configuration Options Worksheet (Excel)](configuration-options.xlsx). It has a Yes/No drop-down for each decision and a second tab showing where each setting lives in the dashboard. A plain [CSV version](configuration-options.csv) is also available.
 
-### Configuration Parameters
+1. **Review** each decision and the Zauron Gold Standard.
+2. **Choose** Yes or No in the "Use Zauron Gold Standard" column. Where you choose No, describe your site's policy when you return the worksheet.
+3. **Name** your Quality Champions.
+4. **Return** the completed worksheet to your Zauron representative, or have your site administrator apply it in the dashboard (see [Where to set it](#where-to-set-it)).
 
-| Configuration | Default | Additional Details | Customer Selection |
-|---------------|---------|-------------------|-------------------|
-| Minimum number of cases seen by rads per week | 5 | Minimum weekly case volume threshold for peer review eligibility | |
-| Maximum number of cases seen by rads per week | 10 | Upper limit on weekly peer review assignments per radiologist | |
-| Number of interesting cases seen by rads per week | 5 | AI-flagged cases with educational or clinical significance | |
-| RadPeer threshold for notifying the quality champion | 2b | Score at which quality leadership is automatically alerted | |
-| Number of cases (in last 3 months) to be qualified to peer review a case | 10 | Minimum recent case volume required to serve as a peer reviewer | |
-| Minimum number of random exams per week | 2 | Baseline random sampling for quality assurance | |
-| Quality Champion | | Designated individual responsible for quality oversight and discrepancy adjudication | |
-| Target Positive Predictive Value for Discrepancy Inclusion | 0.5 | AI threshold for flagging potential discrepancies | |
-| Residents and Fellows Receive Emails | Yes | Whether trainees receive email notifications | |
-| Residents and Fellows Participate in Random QC | Yes | Whether trainees are assigned random quality control sampling | |
-| AI Model Inclusion Policy | Zauron Approval | Policy governing which AI models may be integrated | |
-| AI Model Update Policy | Zauron Approval | Policy governing AI model version updates | |
+### The Zauron Gold Standard at a glance
 
-## Parameter Explanations
+1. Viewing interesting cases counts as peer learning activity.
+2. Flagging a case as a Great Call or for quality review counts as peer learning activity.
+3. Target 5 cases per week of activity.
+4. Use Guardian's outputs to drive peer learning conferences (M&M, topic-driven conferences).
+5. Original authors are notified of potential and confirmed errors.
 
-### Case Volume Settings
+## What counts as peer learning activity
 
-**Minimum number of cases seen by rads per week**
-Sets the floor for radiologist participation. No regulatory required minimum but organizations typically set by number or percent.  
+Peer learning activity counts toward each radiologist's "progress to date" in the weekly email and toward the site's Quality Improvement Activity in Compliance.
 
-**Maximum number of cases seen by rads per week**
-Caps the peer review workload to prevent reviewer fatigue and maintain quality assessments even if AI flags abnormalities.  
+| Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
+|----------|----------|----------|----------|
+| Does completing assigned peer review count as peer learning activity? | Yes. Every completed assigned review counts. | | Credit the core review work in each radiologist's progress and in the site's compliance record. |
+| Does viewing an interesting case count as peer learning activity? | Yes. Opening an interesting case counts (once per case). | | Credit case-based learning, not only scoring, so teaching cases count toward participation. |
+| Does flagging a case count as peer learning activity? | Yes. Flagging a case as a Great Call or for quality review counts. | | Encourage radiologists to raise great calls and quality concerns as part of everyday reading. |
+| Does feedback on interesting cases (thumbs up / down) count? | Yes. | | Learn which cases teach well and credit the time radiologists spend on them. |
+| Does viewing a colleague's Great Call count? | Yes. Opening a Great Call from the weekly email counts (once per case). | | Spread good practice by crediting radiologists who learn from colleagues' great calls. |
 
-**Number of interesting cases seen by rads per week**
-Guardian Pro's AI engine identifies cases with unusual findings, teaching value, or potential discrepancies. This setting controls how many of these flagged cases are routed to each radiologist weekly.
+## Case volume, random sampling and reviewer eligibility
 
-### Quality Assurance Settings
+| Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
+|----------|----------|----------|----------|
+| How many cases per week should each radiologist complete? | Target 5 cases per week of activity. | | Steady, sustainable participation that meets accreditation expectations without adding burden. |
+| What is the most cases a radiologist can be assigned in a week? | 10 cases. | | Cap workload to prevent reviewer fatigue, even in weeks when AI finds many candidate cases. |
+| Should random cases be included, or only AI-selected cases? | Yes. Include at least 1 random case in every weekly assignment. | | Keep an unbiased baseline sample alongside AI-selected cases for quality metrics and accreditation. |
+| How many exams of a procedure must a radiologist have reported to review it? | 10 exams of that procedure in the last 3 months. | | Reviewers have recent, relevant experience with the exams they review. |
 
-**RadPeer threshold for notifying the quality champion**
-Uses the standard RadPeer scoring scale (1-4). A score of 2b or higher indicates a discrepancy that is likely clinically significant. When this threshold is met, the designated Quality Champion receives automatic notification for review and follow-up.
+## AI-driven mistake triage and AI governance
 
-**Number of cases (in last 3 months) to be qualified to peer review a case**
-Ensures peer reviewers have recent, relevant experience. Radiologists must have interpreted at least this many cases in the past 90 days to be eligible as peer reviewers, maintaining expertise currency.
+| Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
+|----------|----------|----------|----------|
+| Should AI drive mistake triage (choose likely discrepancies for review)? | Yes. Production AI models select likely discrepancies for review; new models run in test mode before they affect assignments. | | Spend reviewer time on the cases most likely to hold a learning opportunity. |
+| How accurate should AI-selected cases be? | Zauron tunes each model's thresholds for an enhanced positive predictive value (PPV) of 0.5: about 1 in 2 AI-selected cases holds a true discrepancy. | | A consistent hit rate across models: enough true findings to be worth reviewing, few enough false alarms to keep radiologists' trust. |
+| Who approves adding a new AI model? | Zauron approval. New models are validated through Zauron's AI governance before they are used. | | Only validated models influence which cases radiologists review. |
+| Who approves AI model updates? | Zauron approval. Updates are tested and validated through Zauron's AI governance before deployment. | | Model changes never lower the quality of AI-selected cases without review. |
 
-**Minimum number of random exams per week**
-Guarantees baseline quality sampling independent of AI flagging. These randomly selected cases provide unbiased quality metrics and satisfy accreditation requirements for random peer review.
+## Feedback to original authors and escalation
 
-### Personnel Settings
+| Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
+|----------|----------|----------|----------|
+| Should original authors be told about potential errors (AI-detected, before peer review)? | Yes. Turn on the self-review pathway so authors privately receive AI-confirmed potential discrepancies on their own reports. | | Fast, private, non-punitive feedback that lets radiologists self-correct and addend. |
+| Should original authors be told about confirmed errors (discrepant peer review)? | Yes. Notify the original author for every discrepant peer review response. | | Close the loop so every confirmed discrepancy becomes a learning moment for the author. |
+| Should a Quality Champion be told about significant discrepancies? | Yes. Notify the original author and the domain champion for moderate (2b) and higher discrepancies. | | Make sure clinically significant discrepancies get timely follow-up from quality leadership. |
+| Should original authors be told about their Great Calls? | Yes. Notify the original author of every Great Call. | | Positive reinforcement: recognize excellent reads, not only errors. |
+| Who are your Quality Champions, who adjudicate flagged and disputed cases? | Name one or more Quality Champions covering each subspecialty and give them the Champion role. | | A clear, qualified owner for every escalation and discrepancy decision. |
 
-**Quality Champion**
-Identify the individual(s) responsible for quality oversight. This person receives escalation notifications, manages discrepancy follow-up, and oversees peer review program compliance.
+## Conferences and the teaching file
 
-**Residents and Fellows Receive Emails**
-Determines whether trainees receive notifications of interesting cases. Enable this to include trainees in the educational feedback loop; disable if your program handles trainee feedback through separate channels.  
+| Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
+|----------|----------|----------|----------|
+| Should system outputs drive peer learning conferences? | Yes. Build M&M and topic-driven conferences from Guardian Search (M&M / Discrepancy, Critical Findings, MIPS / Quality) and export the case basket to PowerPoint. | | Turn individual reviews into group learning built from your own local cases. |
+| Which peer review scores count as discrepancies (and feed M&M)? | Use the RADPEER-style scale as shipped: minor, moderate, major and complete-discordance scores count as discrepant. | | A consistent, recognized definition of discrepancy across reviewers, reports and conferences. |
+| Should reviewers have to comment on discrepant scores? | Yes. Require a comment for every discrepant score. | | Comments make a case teachable at conference and actionable for the author. |
+| What should the interesting cases (teaching file) emphasize? | Each weekly email shows 5 For You cases matched to the radiologist's own practice plus 5 top-scoring cases site-wide. | | A living teaching file: relevant to each radiologist's practice and showing the site's most instructive cases. |
+| How many Great Calls should appear in the weekly email? | 5. | | Celebrate and share excellent reads across the group every week. |
+| Should leadership receive a monthly compliance summary? | Yes. Turn on the automatic monthly email to administrators and Champions. | | Keep leadership informed of participation and quality trends without manual reporting. |
 
-**Residents and Fellows Participate in Random QC**
-Controls trainee inclusion in random quality sampling. Consider your accreditation requirements and educational objectives when configuring this setting. Trainees are required by Graduate Medical Education mandates to do a Quality Improvement project, this can satisfy the requirement for all of your trainees. 
+## Residents and fellows
 
-### AI Configuration
+| Decision | Zauron Gold Standard | Use Zauron Gold Standard (Yes/No) | Goal |
+|----------|----------|----------|----------|
+| Should residents and fellows receive the weekly peer learning email? | Yes. Trainees receive the weekly email with interesting cases and Great Calls. | | Bring trainees into the group's learning loop from day one. |
+| How should residents and fellows take part in peer review? | Through Live Watch, not picker assignments. Trainees are not assigned picker cases or discrepant exams; they work the Live Watch page, claiming AI-flagged exams and submitting preliminary reviews that escalate directly to Quality Champions. | | Hands-on discrepancy review for trainees (for example, toward a Graduate Medical Education quality improvement project), with Quality Champions handling every escalation. |
 
-**Target Positive Predictive Value for Discrepancy Inclusion**
-Sets the AI confidence threshold for flagging cases. A value of 0.5 means the a peer reviewer will typically see 1 false positive and 1 true positive during the AI peer review process. Higher values reduce false positives but may miss some true discrepancies; lower values increase sensitivity but require more manual review.
+## Where to set it
 
-**AI Model Inclusion Policy**
-Defines governance for integrating new AI models into your Guardian Pro instance. Default to rely on Zauron's AI Governance methods to ensure model validation.
+Site administrators apply these decisions in the Guardian dashboard. Most are set per employer in **Admin → Policies → Employers → Edit**.
 
-**AI Model Update Policy**
-Establishes the process for updating existing AI models. Default is to rely on Zauron's AI Governance methods to ensure updates are tested and validated before deployment.
+| Decision area | Dashboard location | Setting |
+|---------------|--------------------|---------|
+| What counts as peer learning activity | Admin → Policies → Employers → Edit → **Progress credit** | One checkbox per activity: peer review, manual flag case, interesting-case feedback, interesting case viewed, great call viewed |
+| Cases per week | Admin → Policies → Employers → Edit → **General** | Week Assign Min (5), Week Assign Max (10) |
+| Random cases | Admin → Policies → Employers → Edit → **General** | Random Exams Min (1) |
+| Reviewer eligibility | Admin → Policies → Employers → Edit → **General** | CPT Inclusion Threshold (10). Per-radiologist exceptions in Admin → Inclusion/Exclusion |
+| AI-driven triage | Model-Zoo → Model Portfolio → edit model | Active, Test mode, Display threshold (Zauron tunes each model for an enhanced PPV of 0.5) |
+| AI model inclusion and updates | Managed by Zauron | Zauron AI governance; models you license appear in Model-Zoo |
+| Potential errors to authors | Admin → Policies → Employers → Edit → **Self-review discrepancy emails** | Enable self-review pathway; then turn on **Self Discrepancy** for each radiologist in Admin → Users |
+| Confirmed errors, champion alerts and Great Calls | Admin → Policies → Employers → Edit → **Notification Rules (Per Response)** | For each response type, choose the recipient (for example, "Original author of exam" or "Original author + domain champion") and whether to email immediately |
+| Quality Champions | Admin → Users and Admin → Roles | Assign the Champion role, which includes "Adjudicate flagged cases" |
+| Discrepancy definition and required comments | Admin → Policies → **Peer Review Options** | "Count as peer-review discrepancy (M&M default filter)" and "Require comment in viewer" on each score |
+| Conferences | Search → M&M / Discrepancy, Critical Findings, MIPS / Quality | Add cases to the basket and export to PowerPoint |
+| Interesting cases and Great Calls in the weekly email | Admin → Notifications → **Picker emails** | Interesting cases: For You top N (5), Global top N (5). Great calls: maximum to show (5) |
+| Monthly compliance summary | Admin → Notifications → **Alert routing** → Monthly Compliance Email | Enable automatic monthly send; choose recipients |
+| Residents and fellows | Admin → Roles and Admin → Users | Give trainees a role with "Work Community Watch cases" and "Resident / fellow assignments" (no picker cases), then turn on **Community Watch** for each trainee in Admin → Users |
 
-## How to Complete This Worksheet
-
-1. **Download** the [Configuration Options Worksheet (CSV)](configuration-options.csv)
-2. **Review** each parameter and its default value
-3. **Enter** your organization's preferred settings in the "Customer Selection" column
-4. **Document** any special requirements or questions in your submission
-5. **Submit** the completed worksheet to your Zauron representative
-
-Your configuration will be reviewed and applied during the installation process. Changes to these settings after deployment can be made through the Guardian Pro administration interface or by contacting Zauron support.
+Interesting cases and Search depend on your Guardian Pro plan. If a setting above is not visible in your dashboard, contact your Zauron representative.
 
 ## Need Help?
-
-If you have questions about any configuration option or need guidance on optimal settings for your organization:
 
 - **Email**: [service@zauronlabs.com](mailto:service@zauronlabs.com)
 - **Documentation**: Review our [Installation Guide](installation.md) for additional context

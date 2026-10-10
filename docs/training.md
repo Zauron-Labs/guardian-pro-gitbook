@@ -17,19 +17,21 @@ To watch a training video, [click here to see a video tutorial](https://www.yout
 
 Guardian Pro supports multiple user roles with specific permissions and responsibilities. The following matrix outlines the capabilities for each role:
 
-| Role | Description | Assigned Cases | Assigned Interesting Cases | Receives High Impact Errors | Receives Compliance Records | Access Dashboard |
-|------|-------------|----------------|----------------------------|-----------------------------|-----------------------------|------------------|
-| **Trainee**<br/>(Student/Resident/Fellow) | Medical trainees learning radiology through case review and educational content | Optional | Yes | No | No | Yes |
-| **Radiologist** | Licensed radiologists performing peer review and quality assurance | Yes | Yes | No | No | Yes |
-| **Champion** | Senior radiologist responsible for quality assurance and critical case handling | Yes | Yes | Yes | No | Yes |
-| **Admin** | Administrative user managing compliance reporting and system oversight | No | No | No | Yes | Yes |
+| Role | Description | Assigned Cases | Assigned Interesting Cases | Works Live Watch | Receives High Impact Errors | Receives Compliance Records | Access Dashboard |
+|------|-------------|----------------|----------------------------|------------------|-----------------------------|-----------------------------|------------------|
+| **Trainee**<br/>(Student/Resident/Fellow) | Medical trainees learning radiology through case review and educational content | No | Yes | Yes | No | No | Yes |
+| **Radiologist** | Licensed radiologists performing peer review and quality assurance | Yes | Yes | Yes | No | No | Yes |
+| **Champion** | Senior radiologist responsible for quality assurance and critical case handling | Yes | Yes | Yes | Yes | No | Yes |
+| **Admin** | Administrative user managing compliance reporting and system oversight | No | No | No | No | Yes | Yes |
 
 ### Role Responsibilities
 
-- **Trainees** receive educational cases and optional peer review assignments to build experience
+- **Trainees** receive educational cases and work Live Watch: they claim AI-flagged exams and submit preliminary reviews that escalate directly to Champions. They are not assigned picker cases or discrepant exams
 - **Radiologists** perform standard peer review workflows and receive educational content
 - **Champions** handle critical quality issues and oversee the peer review process
 - **Admins** monitor compliance metrics and generate required documentation reports
+
+**Live Watch** is a shared worklist of AI-flagged exams. To work it, a user needs a role with "Work Community Watch cases" (seeded on Trainee, Radiologist and Champion) and **Community Watch** turned on in Admin → Users. Others with tab access can browse it read-only.
 
 ## Training Timeline
 
