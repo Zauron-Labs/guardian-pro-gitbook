@@ -119,6 +119,7 @@ Radiologists receive their review assignments by email. Ask Zauron for the sendi
 ## Web access and embedding
 
 - **Web access ranges:** the public IP ranges your users connect from. Zauron restricts your Guardian address to these ranges. We strongly recommend setting them, even though users must sign in either way. The no-login Flag Case button from your PACS works only when ranges are set.
+- **Guardian API (optional):** to connect your own viewer, worklist or reporting system to Guardian's REST API instead of using Guardian's screens, ask Zauron to switch it on; it is off by default. Your administrators then create keys, each limited to the IP ranges your integration calls from. See the [Guardian API](guardian-api.md).
 - **Embedding:** if you show Guardian inside another application in an iframe (for example a PACS or RIS web page), give Zauron those sites' addresses. Only the sites you list can embed your Guardian pages.
 
 ## Data protection
