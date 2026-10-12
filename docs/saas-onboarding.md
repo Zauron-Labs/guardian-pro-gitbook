@@ -34,8 +34,12 @@ Guardian connects to the systems inside your network (PACS, reporting system and
 
 - Zauron assigns your organization a **dedicated public IP address**. Guardian's side of your tunnel is that single address. Your PACS, reporting system and directory talk to Guardian at it.
 - You tell Zauron your **VPN gateway's public IP address** and the **internal addresses of the systems Guardian must reach**. Together these define the tunnel's traffic.
-- Zauron's gateway starts the tunnel and restarts it if it drops. Your gateway must accept the connection.
+- Zauron's gateway starts the tunnel and restarts it if it drops. Set your gateway to **respond only** (not to start the tunnel itself). If both sides start it at the same time, your gateway can be left holding a duplicate, stale tunnel. Zauron's gateway always replaces an older tunnel with your gateway when a new one comes up, so only one stays in use.
 - Traffic inside the tunnel is encrypted by IPsec, so DICOM and HL7 inside the tunnel don't need their own TLS.
+
+### Hosted platforms serving several organizations
+
+If your PACS or reporting system is hosted by a cloud provider that serves several of its customers from one VPN gateway, each Guardian organization behind that gateway still gets its own dedicated Guardian address. The provider's gateway has **one tunnel** to Zauron, with a separate set of traffic for each organization, told apart by that organization's Guardian address. This works even when the organizations reach the same PACS address on the provider's side. Organizations behind one gateway share that gateway's pre-shared key. When Zauron adds another organization behind a gateway that is already connected, the tunnel restarts once and is back within seconds. Zauron schedules that restart with the provider.
 
 ### Tunnel settings
 
