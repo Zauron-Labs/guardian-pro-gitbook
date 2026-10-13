@@ -47,6 +47,7 @@ Alternatively, copy the table below into your preferred spreadsheet application.
 | Component | Endpoint/Host | Port | Complete (Yes/No) | Notes |
 |---------|-------------|----|-----------------|-----|
 | Installation type | Azure / AWS / Google / Self-hosted | N/A | No | Select one |
+| Who runs the installation | Your organization / Zauron | N/A | No | Your organization (your own cloud account or data center) lets the PACS Flag Case button work without a sign-in from your network ranges; Zauron-hosted always requires sign-in |
 | VM SSH access | [VM private IP] | 22 | No | SSH key for user zauron with sudo; restrict to admin CIDRs |
 | Existing VNet / VPC | [VNet, VPC, or LAN name/ID] | N/A | No | Required for Azure, AWS and Google; describe the LAN for Self-hosted |
 | Guardian subnet CIDR | [unused CIDR, e.g. 10.0.100.0/24] | N/A | No | Must not overlap existing subnets |
@@ -71,6 +72,7 @@ For easy import into spreadsheet applications, copy this CSV data:
 ```
 Component,Endpoint/Host,Port,Complete (Yes/No),Notes
 Installation type,Azure / AWS / Google / Self-hosted,N/A,No,Select one
+Who runs the installation,Your organization / Zauron,N/A,No,"Your organization (your own cloud account or data center) lets the PACS Flag Case button work without a sign-in from your network ranges; Zauron-hosted always requires sign-in"
 VM SSH access,[VM private IP],22,No,SSH key for user zauron with sudo; restrict to admin CIDRs
 Existing VNet / VPC,"[VNet, VPC, or LAN name/ID]",N/A,No,"Required for Azure, AWS and Google; describe the LAN for Self-hosted"
 Guardian subnet CIDR,"[unused CIDR, e.g. 10.0.100.0/24]",N/A,No,Must not overlap existing subnets
@@ -401,6 +403,7 @@ Guardian has no shared passwords. Your first administrators sign in with a one-t
 - Open only the inbound ports listed above
 - Treat the VM as a trust boundary: it holds Docker access for model containers and connections to PACS and reporting
 - Every user signs in as themselves (email sign-in link, SSO or LDAP). There is no shared administrator password. Radiologists open assigned cases from time-limited email links.
+- **Flag Case button from your PACS.** Because this installation runs in your own cloud account or data center, the button can open a case without a Guardian sign-in, from your registered network ranges only (see the [Flag Case deep link](api_reference.md#flag-case-deep-link)). Tell Zauron on the intake form whether your organization runs the installation; an installation Zauron hosts for you always requires sign-in. You can ask Zauron to require sign-in for the button at any time.
 
 ## Support and Maintenance
 

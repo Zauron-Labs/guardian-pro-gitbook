@@ -18,8 +18,9 @@ This certification demonstrates that Guardian Pro meets the stringent security r
 
 - **Individual accounts only.** Every person signs in as themselves, through single sign-on (OIDC), LDAP / Active Directory, or a one-time link sent to their work email. There are no shared or default passwords, including for administrators.
 - **Roles.** Admin, Champion, Radiologist and Trainee, assigned in Guardian or taken from your directory groups. Access is re-checked as people use Guardian, so a removed user or changed role takes effect promptly.
-- **Assignment links** that radiologists receive by email open only the assigned cases and expire.
-- **Network restrictions.** Access can be limited to your organization's network ranges. The no-login Flag Case button from your PACS works only from those ranges and is rate-limited.
+- **Assignment links** that radiologists receive by email open only the assigned cases and expire. The **Flag a Case** link in those emails signs the recipient in as themselves (never as an administrator); it expires a few hours after the email is sent and stops working when they sign out.
+- **Network restrictions.** Access can be limited to your organization's network ranges.
+- **Flag Case button from your PACS.** On Guardian Pro SaaS and on installations Zauron hosts, the button requires a sign-in. Only a dedicated installation your organization runs can let the button open a case without a sign-in; it then works only from your network ranges, opens only the case clicked, and is rate-limited.
 - **Embedding.** Only sites you list can show Guardian inside their pages.
 - **Zauron support access** to your site is time-limited and recorded in your audit log.
 

@@ -227,7 +227,7 @@ GET https://<your Guardian address>/flag-case?accession={accession}&user_name={u
 | Parameter | Type | Description | Required |
 |-----------|------|-------------|----------|
 | `accession` | string | Accession number of the study to flag. Without it, the radiologist can look the study up after opening the page. | No (recommended) |
-| `user_name` | string | Who is flagging: their work email, their reporting-system user ID, or their exact full name. Without it, the radiologist signs in. | No (recommended) |
+| `user_name` | string | Who is flagging: their work email, their reporting-system user ID, or their exact full name. Used to credit the flag; it never signs anyone in. | No (recommended) |
 
 **Example**
 
@@ -235,11 +235,20 @@ GET https://<your Guardian address>/flag-case?accession={accession}&user_name={u
 https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith
 ```
 
+**Sign-in**
+
+Whether the button needs a Guardian sign-in depends on how Guardian is hosted:
+
+| Hosting | Button behavior |
+|---------|-----------------|
+| **Guardian Pro SaaS**, or an installation Zauron hosts for you | The radiologist signs in (single sign-on, LDAP or a one-time email link). If they are not signed in yet, Guardian shows the sign-in page and then opens the case they clicked, in the same browser. Once signed in, later clicks open the case directly. |
+| **Dedicated installation your organization runs** (your own cloud account or data center) | The button can open the case **without a sign-in**, from your organization's registered network ranges only. Zauron turns this on for your installation on request. It can also be turned off, so that the button always asks for sign-in. |
+
 **Security**
 
-- The button works without a separate sign-in **only from your organization's registered network ranges** (your web access ranges, set with Zauron). No button link works while no ranges are set, and requests from other addresses must sign in.
-- A button click opens that one case only. It doesn't sign the radiologist in to the rest of Guardian.
-- Requests are rate-limited.
+- Without a sign-in, the button works **only from your organization's registered network ranges** (your web access ranges, set with Zauron). No button link works without a sign-in while no ranges are set, and requests from other addresses must sign in.
+- A button click without a sign-in opens that one case only. It doesn't sign the radiologist in to the rest of Guardian. The `user_name` decides who the flag is credited to, and the page shows that name; it is not a credential.
+- Requests without a sign-in are rate-limited.
 - Guardian can be shown inside another application's page only when that site is on your embedding list.
 
 **PACS button configuration**
@@ -253,9 +262,12 @@ Configure your PACS to add a custom button that:
 
 When a radiologist clicks the button in their PACS:
 1. their browser opens a new tab;
-2. the Guardian Flag Case tab opens with the study selected;
-3. they flag the case and add notes;
-4. they return to their PACS workflow.
+2. if a sign-in is needed, Guardian asks for it first;
+3. the Guardian Flag Case tab opens with the study selected;
+4. they flag the case and add notes;
+5. they return to their PACS workflow.
+
+When nobody is signed in, the Guardian page says so plainly ("Not signed in"), and the Flag Case tab shows who the flag will be credited to.
 
 ---
 
@@ -290,7 +302,7 @@ curl http://localhost:8000/predict/jobs/<job_id>
 
 ## Guardian Pro PACS Integration Testing
 
-From a computer inside your registered network ranges, open the link in a browser:
+From a computer inside your registered network ranges (signed in to Guardian, or without a sign-in where your dedicated installation allows it), open the link in a browser:
 
 ```
 https://guardian.yourhospital.com/flag-case?accession=ACC123456&user_name=drsmith

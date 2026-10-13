@@ -23,7 +23,7 @@ The platform is hosted in Amazon Web Services (AWS) in the United States.
 | 4. PACS and reports | Zauron adds your PACS and report source, and both sides test them: a DICOM echo and test study retrieval, then a test report. | You and Zauron |
 | 5. Sign-in | Connect your identity provider (SSO) or directory, or use email sign-in links. | You and Zauron |
 | 6. AI models | Zauron enables the AI models you license and maps your procedure descriptions to them. | Zauron |
-| 7. Access controls | Zauron applies your web access ranges and any sites allowed to embed Guardian. | You and Zauron |
+| 7. Access controls | Zauron applies your web access ranges and any sites allowed to embed Guardian. On SaaS, everyone signs in, including radiologists who use a Flag Case button in your PACS (they sign in once, then the button opens cases directly). | You and Zauron |
 | 8. Go-live | Test studies and reports flow end to end, and your administrators add users and confirm the [peer review options](options.md). | You and Zauron |
 
 ## Connecting your network
