@@ -1,5 +1,6 @@
 Component,Endpoint/Host,Port,Complete (Yes/No),Notes
 Installation type,Azure / AWS / Google / Self-hosted,N/A,No,Select one
+Who runs the installation,Your organization / Zauron,N/A,No,"Your organization (your own cloud account or data center) lets the PACS Flag Case button work without a sign-in from your network ranges; Zauron-hosted always requires sign-in"
 VM SSH access,[VM private IP],22,No,SSH key for user zauron with sudo; restrict to admin CIDRs
 Existing VNet / VPC,"[VNet, VPC, or LAN name/ID]",N/A,No,"Required for Azure, AWS and Google; describe the LAN for Self-hosted"
 Guardian subnet CIDR,"[unused CIDR, e.g. 10.0.100.0/24]",N/A,No,Must not overlap existing subnets
