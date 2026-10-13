@@ -3,6 +3,7 @@
 The Guardian API is for integrating your applications with Guardian Pro:
 
 - **REST API (headless Guardian).** Your viewer, worklist or reporting system reads exams and AI findings and completes peer reviews through Guardian's `/v1` API, without Guardian's screens.
+- **Task feed (HL7).** Guardian sends each new peer review, peer learning and interesting case task to your worklist as an HL7 order, and opening the task there opens the case in Guardian.
 - **PACS Flag Case button.** A browser link that a button in your PACS or reporting software opens, so a radiologist can flag a case for peer review.
 
 To integrate an AI model, so that it runs inside Guardian, see the [Model API](model-api.md) instead.
@@ -40,7 +41,8 @@ The REST API doesn't use your web access ranges; each key's IP allow-list applie
 |-------|--------|
 | `exams:read` | List exams and read their processing status |
 | `findings:read` | Read AI findings (image detections and report findings) and the models in use |
-| `phi:read` | Include patient-identifying details and report text in responses (see [Patient data](#patient-data)) |
+| `phi:read` | Include patient age, the de-identified report and report-derived text in responses (see [Patient data](#patient-data)) |
+| `report:raw` | Also include the original, unmasked report text. Needs `phi:read`; give it only to an integration that requires the original. |
 | `reviews:write` | List, claim, score and defer peer review tasks |
 | `reviews:finalize` | Champion final decisions on review tasks |
 
@@ -95,11 +97,13 @@ After a review is recorded, Guardian sends the same notifications as for a revie
 
 ### Patient data
 
-Without the `phi:read` scope, responses carry no patient-identifying details or report text: only identifiers your systems already hold (accession number, Study / Series / SOP Instance UIDs), codes and statuses.
+Without `phi:read`, responses carry no patient-identifying details or report text: only identifiers your systems already hold (accession number, Study / Series / SOP Instance UIDs), codes and statuses.
 
-With `phi:read`, responses also include the report text and sections, patient age, the report excerpts behind each finding, and critical-finding descriptions. Every such response is recorded in your audit log (key, accessions, source address) **before** it is sent; if the access can't be recorded, the request fails rather than returning the data.
+With `phi:read`, responses also include patient age, the report's sections, the report excerpts behind each finding and critical-finding descriptions, and the **de-identified** report text (`text_kind: deidentified`). Guardian never falls back to the original text: if a de-identified version isn't ready, the text is left out.
 
-Give `phi:read` only to keys that need it.
+The original, unmasked report text (`text_kind: original`) is returned only to a key that also has `report:raw`.
+
+Every response with patient data is recorded in your audit log (key, accessions, source address) **before** it is sent; if the access can't be recorded, the request fails rather than returning the data. Give `phi:read`, and especially `report:raw`, only to keys that need them.
 
 ### Errors
 
@@ -114,6 +118,38 @@ Give `phi:read` only to keys that need it.
 | 503 | Guardian couldn't record a patient-data access; try again |
 
 Responses are JSON and are sent with `Cache-Control: no-store`.
+
+---
+
+## Task feed (HL7 tasks to your worklist)
+
+Guardian can create its review tasks directly in your worklist (for example Agfa Enterprise Imaging), so reviewers start from the worklist they already use. Guardian keeps choosing and assigning the cases; the review itself is done in Guardian.
+
+**What is sent**
+
+| Task | Sent to |
+|------|---------|
+| Peer review | The reviewer Guardian assigned |
+| Peer learning | The original reader, for their own case where Guardian's AI and their report disagree |
+| Interesting case | The reviewer the case was sent to |
+
+Each task is one HL7 v2.5.1 **OMI^O23** order over MLLP, inside your site-to-site VPN:
+
+- **New task** (`NW`): patient ID, accession number and Study Instance UID of the original study, the assignee, a neutral comment and a link that opens the task in Guardian.
+- **Completed** (`SC`, order status `CM`) when the work is done in Guardian, and **withdrawn** (`CA`) when the task is deferred, reassigned or expires.
+- No report text, review results or names other than the assignee's are sent.
+
+Your worklist acknowledges each message. Messages for one task always arrive in order; an unacknowledged message is retried after 1, 5, 15 and 60 minutes, then shown to your Guardian administrators, who can send it again.
+
+**Turning it on**
+
+The task feed is **off by default**. Zauron turns it on for your site and sets the destination with you. Only tasks created after it is turned on are sent. Turning it off sends nothing more, and tasks already in your worklist stay there. Your administrators can pause sending (for example during worklist maintenance) under **Admin → Settings → Task feed**.
+
+**Opening a task**
+
+The link in each task is `https://<your Guardian address>/launch/<reference>`. On its own it grants nothing. When a user opens it, your worklist adds who is signed in, signed with a key Zauron gives you (HMAC-SHA256, valid for 2 minutes, usable once). Guardian matches that user to a Guardian user (work email, then NPI, then the **Worklist user ID** an administrator can set on the user) and opens the case only for the task's assignee. Without a valid signature, the user signs in to Guardian first.
+
+The detailed message specification is shared with your integration team during setup.
 
 ---
 
