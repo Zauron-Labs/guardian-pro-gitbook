@@ -4,7 +4,8 @@ structure:
   readme: README.md
   summary: SUMMARY.md
 
-redirects: {}
+redirects:
+  docs/api_reference: docs/model-api.md
 
 title: "Guardian Pro Documentation"
 

@@ -22,6 +22,7 @@ This certification demonstrates that Guardian Pro meets the stringent security r
 - **Network restrictions.** Access can be limited to your organization's network ranges.
 - **Flag Case button from your PACS.** On Guardian Pro SaaS and on installations Zauron hosts, the button requires a sign-in. Only a dedicated installation your organization runs can let the button open a case without a sign-in; it then works only from your network ranges, opens only the case clicked, and is rate-limited.
 - **Embedding.** Only sites you list can show Guardian inside their pages.
+- **Guardian API keys.** The REST API for your own systems is off until Zauron switches it on for your site. Each key is scoped, limited to the IP ranges you list, expires, and can be revoked at once; Guardian stores only a hash of it. Patient data is returned only to keys with that scope, and each access is audited. See the [Guardian API](guardian-api.md).
 - **Zauron support access** to your site is time-limited and recorded in your audit log.
 
 ## Data protection
@@ -34,7 +35,7 @@ This certification demonstrates that Guardian Pro meets the stringent security r
 
 ## Audit
 
-Each site keeps an append-only audit log of sign-ins and failed sign-ins, study views, exports, AI processing, review submissions and administrative changes. Each entry records who acted, their role and the source address.
+Each site keeps an append-only audit log of sign-ins and failed sign-ins, study views, exports, AI processing, review submissions, Guardian API key changes and patient-data access through the API, and administrative changes. Each entry records who acted, their role and the source address.
 
 ## Questions
 

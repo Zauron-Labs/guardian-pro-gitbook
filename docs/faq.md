@@ -33,3 +33,9 @@ Cases assigned during your absence will automatically age out after your organiz
 ### I'm a combined Breast/Body attending. Do I have to participate in peer review?
 
 Medicare requires each radiology department to maintain accreditation, which typically includes regular peer review of each radiologist — though not necessarily active participation as a reviewer. We recommend full participation but are happy to coordinate with your department's existing peer review strategy. Additionally, Zauron Labs offers a separate service leveraging our Radiology Network to perform external peer reviews, filling any gaps in your program and helping maintain compliance.
+
+## Integrations
+
+### Can we use our own viewer or worklist instead of Guardian's screens?
+
+Yes. With the [Guardian API](guardian-api.md), your viewer or worklist can read exams and AI findings and complete peer reviews, while Guardian keeps choosing and assigning the cases. Ask Zauron to switch the API on for your site; your administrators then create API keys.
