@@ -11,6 +11,7 @@ This documentation provides comprehensive guidance for Guardian Pro, an AI-enric
 
 ## Integrations
 
+- [Feature Support](docs/feature-support.md)
 - [HL7 Report Interface](docs/integrations/hl7.md)
 - [Guardian API](docs/guardian-api.md)
 - [Model API](docs/model-api.md)
