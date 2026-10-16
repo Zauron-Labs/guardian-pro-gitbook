@@ -132,7 +132,7 @@ Radiologists receive their review assignments by email. Ask Zauron for the sendi
 | Report text | Read by an AI language model hosted in AWS in the United States, reached over a private network connection rather than the public internet. |
 | Audit | Sign-ins, study views, exports, reviews and administrative changes are recorded in your site's audit log. When Zauron support staff need to act in your site, access is time-limited and recorded in your audit log. |
 
-For security documentation, contact [security@zauronlabs.com](mailto:security@zauronlabs.com).
+For security documentation, contact [service@zauronlabs.com](mailto:service@zauronlabs.com).
 
 ## Go-live checklist
 

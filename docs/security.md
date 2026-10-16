@@ -39,4 +39,4 @@ Each site keeps an append-only audit log of sign-ins and failed sign-ins, study 
 
 ## Questions
 
-For security-related inquiries or to request our security documentation, contact our team at [security@zauronlabs.com](mailto:security@zauronlabs.com).
+For security-related inquiries or to request our security documentation, contact our team at [service@zauronlabs.com](mailto:service@zauronlabs.com).
