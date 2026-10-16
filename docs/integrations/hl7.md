@@ -14,40 +14,21 @@ For the customer's **interface team** (interface engine / RIS / reporting-system
 | Acknowledgement | Original-mode ACK: `MSA-1` = `AA` / `AE` / `AR`, `MSA-2` = your `MSH-10` |
 | Delivery guarantee | `AA` is sent only after the message is committed to durable storage |
 | Connections | Persistent connections are fine; one message in flight at a time (send, wait for the ACK, send the next) |
-| Network | Site-to-site VPN (standard), or Direct over the internet with mutual TLS and a source-IP allow-list |
+| Network | Site-to-site VPN |
 | Endpoint | Host / IP and TCP port assigned by Zauron at onboarding (one port per customer) |
 
 ---
 
 ## 2. Transport
 
-### 2.1 VPN (standard)
+### 2.1 VPN
 
 - Your network connects to Zauron's VPN gateway with an IPsec site-to-site tunnel (see [Connecting your network](../saas-onboarding.md#connecting-your-network)). On a [dedicated installation](../installation.md), Guardian runs inside your own network and no VPN is needed.
 - Your interface engine connects to the Guardian HL7 address and port Zauron gives you, through the tunnel.
 - Plain MLLP inside the tunnel (the tunnel already encrypts the traffic). No TLS is needed.
 - Only your agreed address range may connect. A connection from any other address is closed without an ACK.
 
-### 2.2 Direct (no VPN): mutual TLS + source-IP allow-list
-
-Use Direct only when a VPN is not possible. The HL7 port then **never accepts plaintext**.
-
-- Your engine connects over the internet to `<your Guardian hostname>:<port>` (Zauron provides both).
-- TLS 1.2 or newer. Guardian presents a publicly trusted server certificate for your Guardian hostname; verify it (hostname check on).
-- Your engine **must present a client certificate**. Guardian accepts it only if it is signed by a CA you gave us and, when you ask for it, only if its subject CN / SAN matches the name(s) you gave us.
-- The connection must come from one of your registered public IP addresses. Anything else is closed before the TLS handshake.
-- A missing, expired or unrecognized client certificate, plaintext, or an unlisted source address all close the connection without an ACK.
-
-**You provide for Direct mode:**
-
-| What | Notes |
-|------|-------|
-| CA certificate(s) (PEM) that sign your engine's client certificate | The CA only: never the client certificate's private key. Intermediate + root is fine. |
-| Optional subject pin(s) | Client certificate CN or SAN value(s) to accept (e.g. `hl7-engine.hospital.org`) |
-| Public source IP addresses / ranges | The addresses your engine's traffic leaves your network from (after NAT). Use the narrowest ranges possible. |
-| Certificate renewal contact | Send the new CA before it changes; client certificates signed by the same CA need no change on our side. |
-
-### 2.3 Connection behaviour
+### 2.2 Connection behaviour
 
 - Keep one persistent connection open, or connect per message: both work.
 - An idle connection is closed after **10 minutes** without traffic (agreed value; can be changed). Your engine should reconnect automatically when it has a message to send.
@@ -158,7 +139,7 @@ OBX|1|FT|&GDT^REPORT||EXAM: CT CHEST, ABDOMEN AND PELVIS WITH CONTRAST\.br\\.br\
 | `I`, `R`, `S`, `O` (other) | Stored for audit, not used. |
 | blank | Treated as `F`. |
 
-Send versions in the order they occur (P, then F, then any C) and wait for each ACK (§2.3). If your system can only send finals, send only `F` and `C`: that is fully supported.
+Send versions in the order they occur (P, then F, then any C) and wait for each ACK (§2.2). If your system can only send finals, send only `F` and `C`: that is fully supported.
 
 ---
 
@@ -168,19 +149,18 @@ Run these in the test phase, using **test patients** where your system allows it
 
 | # | Test | Expected |
 |---|------|----------|
-| T1 | Connect from each interface engine address (VPN: through the tunnel; Direct: TLS with your client certificate) | Connection accepted |
-| T2 | Direct only: connect from an unlisted address, without a client certificate, and in plaintext | All three refused, no ACK |
-| T3 | One final report, one accession | `AA`; Zauron confirms accession, radiologist, exam date and text |
-| T4 | Resend T3 unchanged (same `MSH-10`) | `AA`; no duplicate on Guardian |
-| T5 | Preliminary, then final, same accession (different `MSH-10`s) | `AA`, `AA`; only the final is used |
-| T6 | Final, then corrected (full text) | `AA`, `AA`; the corrected text replaces the final |
-| T7 | One report covering two accessions (two OBRs) | `AA`; both exams linked to the one report |
-| T8 | Final with OBR-32 (and OBR-16) empty | `AA`; attributed to the unknown-radiologist placeholder |
-| T9 | Message with no accession (OBR-2 and OBR-3 empty) | `AE` with a reason in `MSA-3` |
-| T10 | Timestamps with and without an offset | Exam and report times match your system in your local time |
-| T11 | Special characters (`& ^ ~ \ |`), non-ASCII names in the text, a long multi-page report | Text round-trips exactly |
-| T12 | Leave the connection idle past the idle timeout, then send | Engine reconnects and the message gets `AA` |
-| T13 | Radiologist ID check: one report from each reading radiologist (or a staff list with their IDs) | Every ID maps to a known radiologist |
+| T1 | Connect from each interface engine address through the tunnel | Connection accepted |
+| T2 | One final report, one accession | `AA`; Zauron confirms accession, radiologist, exam date and text |
+| T3 | Resend T2 unchanged (same `MSH-10`) | `AA`; no duplicate on Guardian |
+| T4 | Preliminary, then final, same accession (different `MSH-10`s) | `AA`, `AA`; only the final is used |
+| T5 | Final, then corrected (full text) | `AA`, `AA`; the corrected text replaces the final |
+| T6 | One report covering two accessions (two OBRs) | `AA`; both exams linked to the one report |
+| T7 | Final with OBR-32 (and OBR-16) empty | `AA`; attributed to the unknown-radiologist placeholder |
+| T8 | Message with no accession (OBR-2 and OBR-3 empty) | `AE` with a reason in `MSA-3` |
+| T9 | Timestamps with and without an offset | Exam and report times match your system in your local time |
+| T10 | Special characters (`& ^ ~ \ |`), non-ASCII names in the text, a long multi-page report | Text round-trips exactly |
+| T11 | Leave the connection idle past the idle timeout, then send | Engine reconnects and the message gets `AA` |
+| T12 | Radiologist ID check: one report from each reading radiologist (or a staff list with their IDs) | Every ID maps to a known radiologist |
 
 ---
 
@@ -188,14 +168,14 @@ Run these in the test phase, using **test patients** where your system allows it
 
 Guardian switches your HL7 feed to production when all of these hold:
 
-1. **All test cases T1–T13 pass** (T2 applies to Direct mode only).
+1. **All test cases T1–T12 pass**.
 2. **Parallel run**: the live feed runs for at least **5 business days** alongside the current report source (Guardian receives and stores, but does not use, the HL7 reports), and Zauron's comparison shows:
    - every final report in the period was received over HL7 (no missing accessions);
    - radiologist, patient age and exam date match the current source for every report (differences explained and fixed);
    - preliminary / final / corrected versions and multi-accession reports behave as in §4.2 and §6;
    - no unexplained `AE`, and every `AR` recovered by resend.
 3. **Radiologist IDs**: every active reading radiologist's OBR-32 ID is known (no reports attributed to the unknown placeholder).
-4. **Time zone** confirmed (T10).
+4. **Time zone** confirmed (T9).
 5. **Monitoring agreed**: Zauron is alerted when your feed is silent for longer than an agreed period (default 4 hours) or when rejected / failed messages spike. Give us a 24×7 contact for the interface engine and your planned-downtime notice process.
 6. **Cut-over plan**: the date the previous report source stops being used, and who confirms the first production day.
 
@@ -203,6 +183,6 @@ Guardian switches your HL7 feed to production when all of these hold:
 
 ## 9. Contacts and changes
 
-- Tell Zauron **before** changing: engine IP addresses, client CA (Direct), sending application / facility values, HL7 version, character set, or the time zone your system sends.
+- Tell Zauron **before** changing: engine IP addresses, sending application / facility values, HL7 version, character set, or the time zone your system sends.
 - Planned engine downtime: notify Zauron in advance so the silence alert is expected. Queued messages sent after the downtime are accepted in order.
 - Questions about this profile: your Zauron onboarding contact.
