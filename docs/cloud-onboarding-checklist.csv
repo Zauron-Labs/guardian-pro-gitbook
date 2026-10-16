@@ -27,7 +27,6 @@ PACS,Site 1 PACS IP address and DICOM port,,Must be one of the internal systems 
 PACS,Site 1 PACS mode,,Pull (standard): Guardian queries by accession and asks the PACS to send the study. Push: your PACS or router sends studies to Guardian
 PACS,Site 1 Guardian added to the PACS as a DICOM node (Yes / No),,"Zauron provides Guardian's AE title, IP address and DICOM port. Allow query (C-FIND), move (C-MOVE) and echo (C-ECHO); Guardian sends regular echoes as a health check"
 PACS,Site 1 Push only: AE title and IP address of the system that sends to Guardian,,
-PACS,Site 1 Studies with more than one accession: does the PACS find the study by each accession?,,Yes / No / Not sure
 Reporting,Site 1 report source,,PowerScribe web API / HL7 v2 / PowerScribe database (SQL Server). Several sites can share one source
 Reporting,"Site 1 report time zone, if different from the organization",,
 Reporting,PowerScribe API: web address,,For example https://powerscribe.hospital.org/RadPortal/
@@ -54,5 +53,4 @@ Access,Web access ranges (public IP ranges of your users),,Strongly recommended
 Access,Sites allowed to embed Guardian (iframe),,Optional
 Access,"Guardian API needed? If so, the IP ranges your integration calls from",,Optional; off by default
 Models,AI models licensed,,From your agreement
-Models,Orderable procedure list (descriptions and CPT codes),,Optional; helps map procedures to models
 Options,Peer review options worksheet,,See Options
