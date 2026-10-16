@@ -5,7 +5,7 @@
 Guardian Pro is designed for minimal training requirements, with most radiologists familiar with PACS-based workflows. We provide comprehensive training resources to ensure smooth adoption and optimal utilization.
 
 To see Guardian Pro with sample cases, ask your Zauron representative for a demo account.
-To watch a training video, [click here to see a video tutorial](https://www.youtube.com/watch?v=3mWilwLofS8).
+To watch a training video, [click here to see a video tutorial](https://youtu.be/8_GLsQLhg8A).
 
 ### Available Resources
 
