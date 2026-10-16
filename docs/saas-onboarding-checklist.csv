@@ -12,12 +12,9 @@ Sites,Site 1 report source,,PowerScribe web API / HL7 v2 / PowerScribe database 
 Sites,Site 1 report source address and port,,Internal address reached through the VPN; HL7 feeds connect to Guardian instead
 Sites,Site 1 report source service account (username),,Send the password over a secure channel agreed with Zauron
 Sites,Site 2 (repeat the site rows),,Optional
-Connectivity,Connection type,,VPN (standard) or Direct (HL7 only)
 Connectivity,VPN gateway public IP address,,
 Connectivity,Internal addresses Guardian must reach (PACS / reporting / directory),,IP addresses or subnets
 Connectivity,Firewall rules in place (UDP 500 and 4500),,See SaaS Onboarding > Firewall rules
-Connectivity,Direct only: public source IP ranges of the interface engine,,
-Connectivity,Direct only: CA certificate that signs the engine's client certificate,,PEM; the CA certificate only
 Sign-in,Sign-in method,,SSO (OIDC) / LDAP / email sign-in links
 Sign-in,SSO: identity provider and issuer URL,,Client secret over a secure channel
 Sign-in,LDAP: server address / base DN / bind account,,Bind password over a secure channel

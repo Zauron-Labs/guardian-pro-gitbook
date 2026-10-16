@@ -68,16 +68,6 @@ These settings are the same for every customer.
 | Inside the tunnel, from Guardian to your network | Your Guardian address → your directory | LDAPS 636, or LDAP 389 with STARTTLS |
 | Internet, to Guardian | Your users → your Guardian web address | HTTPS 443 |
 
-### Connecting without a VPN (Direct)
-
-If a VPN isn't possible, an **HL7 report feed** can connect directly over the internet instead. The connection is protected by:
-
-- **TLS 1.2 or newer.** Guardian presents a publicly trusted certificate for your Guardian address.
-- **A required client certificate.** Your interface engine must present a certificate signed by a CA you give Zauron (the CA certificate only, never a private key).
-- **Source addresses.** Connections are accepted only from the public IP ranges you register.
-
-Direct connections are available for HL7 only. PACS, PowerScribe and LDAP connections use the VPN. See the [HL7 Report Interface](integrations/hl7.md) for details.
-
 ## PACS
 
 Guardian retrieves the studies it needs from your PACS:
@@ -131,7 +121,7 @@ Radiologists receive their review assignments by email. Ask Zauron for the sendi
 | Area | How Guardian SaaS protects it |
 |------|-------------------------------|
 | Separation between customers | A separate database, storage area and web address for each customer. Sign-in is bound to your own site. |
-| Data in transit | HTTPS with TLS 1.2 or newer for users. IPsec VPN, or mutual TLS for Direct HL7, for your systems. TLS to the database. |
+| Data in transit | HTTPS with TLS 1.2 or newer for users. IPsec VPN for your systems. TLS to the database. |
 | Data at rest | Encrypted databases, disks and storage. Connection secrets, such as your PowerScribe password, are stored encrypted. |
 | Images | DICOM private tags are removed from the copies Guardian keeps. Study identifiers and accession numbers are kept so your team can find the study in your PACS. |
 | Logs | Patient medical record numbers are never written to logs. |

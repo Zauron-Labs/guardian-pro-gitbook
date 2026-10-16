@@ -27,7 +27,7 @@ This certification demonstrates that Guardian Pro meets the stringent security r
 
 ## Data protection
 
-- **In transit:** TLS 1.2 or newer for all web traffic. SaaS integrations with your network use an IPsec site-to-site VPN, or mutual TLS for direct HL7 feeds. Database connections use TLS.
+- **In transit:** TLS 1.2 or newer for all web traffic. SaaS integrations with your network use an IPsec site-to-site VPN. Database connections use TLS.
 - **At rest:** databases, disks and storage are encrypted. Integration secrets such as service-account passwords are stored encrypted.
 - **Images:** DICOM private tags are removed from the copies Guardian keeps. Study identifiers and accession numbers are kept so your team can locate the original study.
 - **Logs:** patient medical record numbers are never written to logs.
