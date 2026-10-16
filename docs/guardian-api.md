@@ -184,7 +184,7 @@ Whether the button needs a Guardian sign-in depends on how Guardian is hosted:
 
 | Hosting | Button behavior |
 |---------|-----------------|
-| **Guardian Pro SaaS**, or an installation Zauron hosts for you | The radiologist signs in (single sign-on, LDAP or a one-time email link). If they are not signed in yet, Guardian shows the sign-in page and then opens the case they clicked, in the same browser. Once signed in, later clicks open the case directly. |
+| **Guardian Pro Cloud**, or an installation Zauron hosts for you | The radiologist signs in (single sign-on, LDAP or a one-time email link). If they are not signed in yet, Guardian shows the sign-in page and then opens the case they clicked, in the same browser. Once signed in, later clicks open the case directly. |
 | **Dedicated installation your organization runs** (your own cloud account or data center) | The button can open the case **without a sign-in**, from your organization's registered network ranges only. Zauron turns this on for your installation on request. It can also be turned off, so that the button always asks for sign-in. |
 
 **Security**

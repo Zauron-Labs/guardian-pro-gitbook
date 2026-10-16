@@ -5,7 +5,7 @@ This documentation provides comprehensive guidance for Guardian Pro, an AI-enric
 ## Getting Started
 
 - [Introduction](docs/introduction.md)
-- [SaaS Onboarding](docs/saas-onboarding.md)
+- [Cloud Onboarding](docs/cloud-onboarding.md)
 - [Dedicated Installation](docs/installation.md)
 - [Options](docs/options.md)
 

@@ -23,7 +23,7 @@ For the customer's **interface team** (interface engine / RIS / reporting-system
 
 ### 2.1 VPN
 
-- Your network connects to Zauron's VPN gateway with an IPsec site-to-site tunnel (see [Connecting your network](../saas-onboarding.md#connecting-your-network)). On a [dedicated installation](../installation.md), Guardian runs inside your own network and no VPN is needed.
+- Your network connects to Zauron's VPN gateway with an IPsec site-to-site tunnel (see [Connecting your network](../cloud-onboarding.md#connecting-your-network)). On a [dedicated installation](../installation.md), Guardian runs inside your own network and no VPN is needed.
 - Your interface engine connects to the Guardian HL7 address and port Zauron gives you, through the tunnel.
 - Plain MLLP inside the tunnel (the tunnel already encrypts the traffic). No TLS is needed.
 - Only your agreed address range may connect. A connection from any other address is closed without an ACK.
