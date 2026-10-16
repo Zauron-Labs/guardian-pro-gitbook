@@ -10,7 +10,7 @@ Guardian Pro revolutionizes radiology quality assurance through intelligent case
 ## Quick Start
 
 - **[Introduction](docs/introduction.md)** - Learn about Guardian Pro's capabilities
-- **[SaaS Onboarding](docs/saas-onboarding.md)** - Connect your organization to Guardian Pro, hosted by Zauron
+- **[Cloud Onboarding](docs/cloud-onboarding.md)** - Connect your organization to Guardian Pro, hosted by Zauron
 - **[Dedicated Installation](docs/installation.md)** - Run Guardian Pro in your own Azure, AWS, Google or on-premises environment
 - **[Training & Onboarding](docs/training.md)** - Get started with comprehensive training resources
 - **[Compliance & Accreditation](docs/compliance.md)** - Ensure regulatory compliance
@@ -29,7 +29,7 @@ Guardian Pro revolutionizes radiology quality assurance through intelligent case
 
 ## Deployment Options
 
-- **SaaS**: Hosted and operated by Zauron; your PACS and reporting systems connect over a site-to-site VPN
+- **Cloud**: Hosted and operated by Zauron; your PACS and reporting systems connect over a site-to-site VPN
 - **Dedicated**: Runs in your own Azure, AWS or Google cloud, or on premises
 
 ## Support

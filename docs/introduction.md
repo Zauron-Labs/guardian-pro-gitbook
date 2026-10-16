@@ -44,6 +44,6 @@ Guardian Pro is designed for:
 ## Why Choose Guardian Pro?
 
 - **Minimal Training Required**: Most radiologists are already familiar with PACS-based workflows
-- **Flexible Deployment**: Zauron-hosted [SaaS](saas-onboarding.md), or a [dedicated installation](installation.md) in your own Azure, AWS or Google cloud or data center
+- **Flexible Deployment**: Zauron-hosted [Cloud](cloud-onboarding.md), or a [dedicated installation](installation.md) in your own Azure, AWS or Google cloud or data center
 - **Proven Results**: Comprehensive compliance support with optional expert radiologist services
 - **Future-Ready**: Designed to evolve with emerging AI technologies and regulatory requirements

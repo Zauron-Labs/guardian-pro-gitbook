@@ -13,13 +13,13 @@ VPN,"VPN gateway make, model and software version",,
 VPN,VPN gateway public IP address,,Must be static
 VPN,IKE identity your gateway sends,,"Must be the gateway's public IP address. A gateway behind NAT, or one that sends a hostname or private address, can't connect"
 VPN,Backup or second gateway?,,One gateway per organization is supported today; tell Zauron if you need more
-VPN,Gateway supports the tunnel settings (Yes / No),,"IKEv2, pre-shared key, AES-256, SHA-256, DH group 14. See SaaS Onboarding > Tunnel settings"
+VPN,Gateway supports the tunnel settings (Yes / No),,"IKEv2, pre-shared key, AES-256, SHA-256, DH group 14. See Cloud Onboarding > Tunnel settings"
 VPN,Gateway set to respond only (Yes / No),,Zauron's gateway starts the tunnel
-VPN,Is your PACS or reporting system hosted by a provider that serves several organizations from one gateway? (provider name),,See SaaS Onboarding > Hosted platforms serving several organizations
+VPN,Is your PACS or reporting system hosted by a provider that serves several organizations from one gateway? (provider name),,See Cloud Onboarding > Hosted platforms serving several organizations
 VPN,"Internal systems Guardian must reach: PACS, reporting system, interface engine, LDAP (IP address and role of each)",,List individual hosts where possible; any subnet must be /24 or smaller. This is your side of the tunnel's traffic
 VPN,Guardian side of the tunnel,,Zauron provides your organization's Guardian IP address (a single public /32). Route it into the tunnel
 VPN,Pre-shared key,,Never by email or in this sheet. Zauron sends a one-time secure link
-VPN,Firewall rules in place (Yes / No),,"UDP 500 and 4500 to Zauron's gateway, plus the inside-tunnel ports. See SaaS Onboarding > Firewall rules"
+VPN,Firewall rules in place (Yes / No),,"UDP 500 and 4500 to Zauron's gateway, plus the inside-tunnel ports. See Cloud Onboarding > Firewall rules"
 PACS,Site 1 name,,One block of rows per campus or location. Several sites can share one PACS
 PACS,Site 1 PACS vendor and version,,
 PACS,Site 1 PACS AE title,,

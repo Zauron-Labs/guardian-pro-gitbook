@@ -6,6 +6,8 @@ structure:
 
 redirects:
   docs/api_reference: docs/model-api.md
+  docs/saas-onboarding: docs/cloud-onboarding.md
+  docs/saas-onboarding.md: docs/cloud-onboarding.md
 
 title: "Guardian Pro Documentation"
 

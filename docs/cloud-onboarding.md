@@ -1,6 +1,6 @@
-# SaaS Onboarding
+# Cloud Onboarding
 
-Guardian Pro SaaS is hosted and operated by Zauron. You don't install or run servers: Zauron creates your organization on the Guardian platform, connects it to your PACS and reporting systems, and keeps it updated. This page explains how onboarding works and what your team provides.
+Guardian Pro Cloud is hosted and operated by Zauron. You don't install or run servers: Zauron creates your organization on the Guardian platform, connects it to your PACS and reporting systems, and keeps it updated. This page explains how onboarding works and what your team provides.
 
 If your organization needs Guardian to run inside its own cloud or data center instead, see [Dedicated Installation](installation.md).
 
@@ -17,18 +17,18 @@ The platform is hosted in Amazon Web Services (AWS) in the United States.
 
 | Step | What happens | Who |
 |------|--------------|-----|
-| 1. Intake | Complete the [SaaS onboarding checklist](saas-onboarding-checklist.csv): organization details, time zone, first administrators, sites, PACS, reporting and sign-in method. | You, with Zauron |
+| 1. Intake | Complete the [Cloud onboarding checklist](cloud-onboarding-checklist.csv): organization details, time zone, first administrators, sites, PACS, reporting and sign-in method. | You, with Zauron |
 | 2. Site created | Zauron creates your Guardian site and sends your web address. Your first administrators can sign in. | Zauron |
 | 3. Connectivity | Your network team sets up the site-to-site VPN (see [Connecting your network](#connecting-your-network)). Nothing flows between your network and Guardian until this step is complete. | You and Zauron |
 | 4. PACS and reports | Zauron adds your PACS and report source, and both sides test them: a DICOM echo and test study retrieval, then a test report. | You and Zauron |
 | 5. Sign-in | Connect your identity provider (SSO) or directory, or use email sign-in links. | You and Zauron |
 | 6. AI models | Zauron enables the AI models you license and maps your procedure descriptions to them. | Zauron |
-| 7. Access controls | Zauron applies your web access ranges and any sites allowed to embed Guardian. On SaaS, everyone signs in, including radiologists who use a Flag Case button in your PACS (they sign in once, then the button opens cases directly). | You and Zauron |
+| 7. Access controls | Zauron applies your web access ranges and any sites allowed to embed Guardian. On Guardian Pro Cloud, everyone signs in, including radiologists who use a Flag Case button in your PACS (they sign in once, then the button opens cases directly). | You and Zauron |
 | 8. Go-live | Test studies and reports flow end to end, and your administrators add users and confirm the [peer review options](options.md). | You and Zauron |
 
 ## Connecting your network
 
-Guardian connects to the systems inside your network (PACS, reporting system and, if used, your LDAP directory) through a **site-to-site IPsec VPN** between your firewall and Zauron's VPN gateway. This is the standard connection for every SaaS customer.
+Guardian connects to the systems inside your network (PACS, reporting system and, if used, your LDAP directory) through a **site-to-site IPsec VPN** between your firewall and Zauron's VPN gateway. This is the standard connection for every Guardian Pro Cloud customer.
 
 ### How the tunnel works
 
@@ -122,7 +122,7 @@ Radiologists receive their review assignments by email. Ask Zauron for the sendi
 
 ## Data protection
 
-| Area | How Guardian SaaS protects it |
+| Area | How Guardian Pro Cloud protects it |
 |------|-------------------------------|
 | Separation between customers | A separate database, storage area and web address for each customer. Sign-in is bound to your own site. |
 | Data in transit | HTTPS with TLS 1.2 or newer for users. IPsec VPN for your systems. TLS to the database. |

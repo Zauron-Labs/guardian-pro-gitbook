@@ -2,7 +2,7 @@
 
 A dedicated installation runs Guardian Pro on a **virtual machine in your own cloud or data center**, for your organization only. Your team provisions the infrastructure, database access and connections to PACS and reporting systems. Zauron installs and operates the application on that VM.
 
-Most organizations use [Guardian Pro SaaS](saas-onboarding.md) instead, which Zauron hosts and operates, so there is nothing for your team to install. Choose a dedicated installation when your policies require Guardian to run inside your own network.
+Most organizations use [Guardian Pro Cloud](cloud-onboarding.md) instead, which Zauron hosts and operates, so there is nothing for your team to install. Choose a dedicated installation when your policies require Guardian to run inside your own network.
 
 ## Choose your installation type
 
@@ -359,7 +359,7 @@ You do not install Guardian Pro from a public download. First-time database init
 
 #### 7. Sign-in and users
 
-Guardian has no shared passwords. Your first administrators sign in with a one-time link sent to their work email, or through single sign-on (OIDC) or LDAP once your directory is connected. They add everyone else in the dashboard **Admin** tab. With a directory, users and roles can come from your directory groups. See [Sign-in and users](saas-onboarding.md#sign-in-and-users); the options are the same for dedicated installations.
+Guardian has no shared passwords. Your first administrators sign in with a one-time link sent to their work email, or through single sign-on (OIDC) or LDAP once your directory is connected. They add everyone else in the dashboard **Admin** tab. With a directory, users and roles can come from your directory groups. See [Sign-in and users](cloud-onboarding.md#sign-in-and-users); the options are the same for dedicated installations.
 
 ### Post-Installation Verification
 
