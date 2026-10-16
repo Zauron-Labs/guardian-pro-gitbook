@@ -1,25 +1,58 @@
 Section,Item,Your answer,Notes
 Organization,Organization name,,
-Organization,Short name for your Guardian web address,,Lowercase letters digits and hyphens
+Organization,Short name for your Guardian web address,,"Lowercase letters, digits and hyphens"
 Organization,Time zone,,IANA name such as America/Chicago
-Organization,IT contact email,,
+Organization,"Primary contact (name, email, phone)",,
+Contacts,"Network / firewall contact (name, email, phone)",,Sets up the VPN; also reachable 24x7 for tunnel outages
+Contacts,"PACS contact (name, email, phone)",,
+Contacts,"Reporting system / interface engine contact (name, email, phone)",,
+Contacts,Planned-maintenance notice process,,"How you tell Zauron before firewall, PACS or reporting changes"
 Administrators,First administrator (name and work email),,At least one; they add all other users
 Administrators,Second administrator (name and work email),,Optional
-Sites,Site 1 name,,One row per campus or location
-Sites,Site 1 PACS AE title / IP address / DICOM port,,Internal address reached through the VPN
-Sites,Site 1 PACS mode,,Pull (standard) or Push
-Sites,Site 1 report source,,PowerScribe web API / HL7 v2 / PowerScribe database (SQL Server)
-Sites,Site 1 report source address and port,,Internal address reached through the VPN; HL7 feeds connect to Guardian instead
-Sites,Site 1 report source service account (username),,Send the password over a secure channel agreed with Zauron
-Sites,Site 2 (repeat the site rows),,Optional
-Connectivity,VPN gateway public IP address,,
-Connectivity,Internal addresses Guardian must reach (PACS / reporting / directory),,IP addresses or subnets
-Connectivity,Firewall rules in place (UDP 500 and 4500),,See SaaS Onboarding > Firewall rules
+VPN,"VPN gateway make, model and software version",,
+VPN,VPN gateway public IP address,,Must be static
+VPN,IKE identity your gateway sends,,"Must be the gateway's public IP address. A gateway behind NAT, or one that sends a hostname or private address, can't connect"
+VPN,Backup or second gateway?,,One gateway per organization is supported today; tell Zauron if you need more
+VPN,Gateway supports the tunnel settings (Yes / No),,"IKEv2, pre-shared key, AES-256, SHA-256, DH group 14. See SaaS Onboarding > Tunnel settings"
+VPN,Gateway set to respond only (Yes / No),,Zauron's gateway starts the tunnel
+VPN,Is your PACS or reporting system hosted by a provider that serves several organizations from one gateway? (provider name),,See SaaS Onboarding > Hosted platforms serving several organizations
+VPN,"Internal systems Guardian must reach: PACS, reporting system, interface engine, LDAP (IP address and role of each)",,List individual hosts where possible; any subnet must be /24 or smaller. This is your side of the tunnel's traffic
+VPN,Guardian side of the tunnel,,Zauron provides your organization's Guardian IP address (a single public /32). Route it into the tunnel
+VPN,Pre-shared key,,Never by email or in this sheet. Zauron sends a one-time secure link
+VPN,Firewall rules in place (Yes / No),,"UDP 500 and 4500 to Zauron's gateway, plus the inside-tunnel ports. See SaaS Onboarding > Firewall rules"
+PACS,Site 1 name,,One block of rows per campus or location. Several sites can share one PACS
+PACS,Site 1 PACS vendor and version,,
+PACS,Site 1 PACS AE title,,
+PACS,Site 1 PACS IP address and DICOM port,,Must be one of the internal systems listed under VPN
+PACS,Site 1 PACS mode,,Pull (standard): Guardian queries by accession and asks the PACS to send the study. Push: your PACS or router sends studies to Guardian
+PACS,Site 1 Guardian added to the PACS as a DICOM node (Yes / No),,"Zauron provides Guardian's AE title, IP address and DICOM port. Allow query (C-FIND), move (C-MOVE) and echo (C-ECHO); Guardian sends regular echoes as a health check"
+PACS,Site 1 Push only: AE title and IP address of the system that sends to Guardian,,
+PACS,Site 1 Studies with more than one accession: does the PACS find the study by each accession?,,Yes / No / Not sure
+Reporting,Site 1 report source,,PowerScribe web API / HL7 v2 / PowerScribe database (SQL Server). Several sites can share one source
+Reporting,"Site 1 report time zone, if different from the organization",,
+Reporting,PowerScribe API: web address,,For example https://powerscribe.hospital.org/RadPortal/
+Reporting,PowerScribe API: service account username,,An account enabled for the web services API. Password over a secure channel
+Reporting,PowerScribe API: PowerScribe site ID or site name for this Guardian site,,
+Reporting,PowerScribe database: server address and port,,A static port (default 1433)
+Reporting,PowerScribe database: database name,,
+Reporting,PowerScribe database: read-only SQL login username,,SQL Server authentication; Windows sign-in isn't supported. Password over a secure channel
+Reporting,HL7: interface engine product and version,,
+Reporting,HL7: interface engine IP addresses,,Must be among the internal systems listed under VPN
+Reporting,HL7: HL7 version and character set (MSH-12 / MSH-18),,
+Reporting,HL7: sending application and facility (MSH-3 / MSH-4),,
+Reporting,HL7: do timestamps include a UTC offset?,,"If not, give the time zone they use"
+Reporting,HL7: accession number field,,"OBR-3 (default), OBR-2, OBR-18 or OBR-19"
+Reporting,HL7: radiologist ID in OBR-32,,Your internal ID or NPI
+Reporting,HL7: report statuses sent,,Preliminary / Final / Corrected. See HL7 Report Interface
+Radiologists,Radiologist roster attached (Yes / No),,"Name, work email, reporting-system ID, NPI and subspecialty for each reading radiologist"
 Sign-in,Sign-in method,,SSO (OIDC) / LDAP / email sign-in links
-Sign-in,SSO: identity provider and issuer URL,,Client secret over a secure channel
-Sign-in,LDAP: server address / base DN / bind account,,Bind password over a secure channel
+Sign-in,"SSO: identity provider, issuer URL and client ID",,Client secret over a secure channel
+Sign-in,"LDAP: server address, base DN and bind account",,Reached through the VPN. Bind password over a secure channel; include your directory's CA certificate
 Sign-in,Roles from directory groups or set in Guardian,,Group names for Admin / Champion / Radiologist / Trainee
+Sign-in,Guardian's sending address allowed in your mail filters (Yes / No),,Zauron provides the address; review assignments arrive by email
 Access,Web access ranges (public IP ranges of your users),,Strongly recommended
 Access,Sites allowed to embed Guardian (iframe),,Optional
+Access,"Guardian API needed? If so, the IP ranges your integration calls from",,Optional; off by default
 Models,AI models licensed,,From your agreement
+Models,Orderable procedure list (descriptions and CPT codes),,Optional; helps map procedures to models
 Options,Peer review options worksheet,,See Options

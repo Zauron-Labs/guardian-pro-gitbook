@@ -33,7 +33,9 @@ Guardian connects to the systems inside your network (PACS, reporting system and
 ### How the tunnel works
 
 - Zauron assigns your organization a **dedicated public IP address**. Guardian's side of your tunnel is that single address. Your PACS, reporting system and directory talk to Guardian at it.
-- You tell Zauron your **VPN gateway's public IP address** and the **internal addresses of the systems Guardian must reach**. Together these define the tunnel's traffic.
+- You tell Zauron your **VPN gateway's public IP address** and the **internal addresses of the systems Guardian must reach**. Together these define the tunnel's traffic. List individual hosts where possible; any subnet must be /24 or smaller.
+- Your gateway must have a **static public IP address** and use it as its IKE identity. A gateway behind NAT, or one that identifies itself by a hostname or private address, can't connect.
+- One gateway per organization is supported today. Tell Zauron early if you need a backup gateway.
 - Zauron's gateway starts the tunnel and restarts it if it drops. Set your gateway to **respond only** (not to start the tunnel itself). If both sides start it at the same time, your gateway can be left holding a duplicate, stale tunnel. Zauron's gateway always replaces an older tunnel with your gateway when a new one comes up, so only one stays in use.
 - Traffic inside the tunnel is encrypted by IPsec, so DICOM and HL7 inside the tunnel don't need their own TLS.
 
@@ -84,7 +86,7 @@ Guardian retrieves the studies it needs from your PACS:
 - your Guardian IP address;
 - the DICOM port.
 
-Add Guardian to your PACS as a DICOM node with those values, and allow it to query and move studies. Guardian refuses studies sent to any other AE title.
+Add Guardian to your PACS as a DICOM node with those values, and allow it to query and move studies and to send DICOM echoes (Guardian echoes your PACS regularly as a health check). Guardian refuses studies sent to any other AE title.
 
 ## Reporting systems
 
@@ -92,11 +94,13 @@ Guardian reads finalized radiology reports from one of these sources per site:
 
 | Source | How it connects |
 |--------|-----------------|
-| **PowerScribe** | Guardian signs in to the PowerScribe web API with a service account you create. |
+| **PowerScribe** | Guardian signs in to the PowerScribe web API with a service account you create and enable for the web services API. |
 | **HL7 v2 (ORU^R01)** | Your interface engine sends finalized reports to Guardian over MLLP. See the [HL7 Report Interface](integrations/hl7.md). |
-| **PowerScribe database (SQL Server)** | Guardian reads finalized reports from the PowerScribe database with a read-only account, when the web API isn't used. |
+| **PowerScribe database (SQL Server)** | Guardian reads finalized reports from the PowerScribe database with a read-only SQL Server login on a static port, when the web API isn't used. Windows sign-in isn't supported. |
 
 Several sites can share one report source.
+
+Also send a **radiologist roster**: name, work email, reporting-system ID, NPI and subspecialty for each reading radiologist. Guardian uses the reporting-system ID to match each report to its radiologist.
 
 ## Sign-in and users
 
