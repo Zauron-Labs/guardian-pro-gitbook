@@ -60,4 +60,4 @@ Our structured 3-week onboarding process ensures you get up and running quickly 
 
 ## Getting Started
 
-Ready to begin? Contact your Zauron representative or visit our [documentation portal](https://docs.zauronlabs.com/guardian-pro) to access training materials.
+Ready to begin? Contact your Zauron representative.
