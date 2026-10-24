@@ -32,6 +32,7 @@ This certification demonstrates that Guardian Pro meets the stringent security r
 - **Images:** DICOM private tags are removed from the copies Guardian keeps. Study identifiers and accession numbers are kept so your team can locate the original study.
 - **Logs:** patient medical record numbers are never written to logs.
 - **Customer separation (Cloud):** each customer has its own database, storage area and web address. See [Cloud Onboarding](cloud-onboarding.md#data-protection).
+- **Subprocessors:** the third parties that store or process customer data are listed on [Subprocessors](subprocessors.md).
 
 ## Audit
 
