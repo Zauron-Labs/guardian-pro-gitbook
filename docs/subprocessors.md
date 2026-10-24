@@ -6,18 +6,18 @@ A subprocessor is a third party that Zauron Labs uses to store or process custom
 
 ## Guardian Pro Cloud
 
-Guardian Pro Cloud is hosted in Amazon Web Services (AWS) in the United States. Each customer has its own database, storage area and web address.
+Each Guardian Pro Cloud instance is hosted in either Amazon Web Services (AWS) or Microsoft Azure, in the United States. The AI image model containers for an instance also run in AWS or Azure, chosen for that instance, and this can be a different cloud from the one that hosts the instance. Your agreement states which cloud is used for each. Each customer has its own database, storage area and web address.
 
 ### Subprocessors that handle customer data
 
-| Subprocessor | Service | Purpose | Customer data | Location | Agreement |
-|---|---|---|---|---|---|
-| Amazon Web Services, Inc. | Compute, database, storage, backups, encryption keys, monitoring | Hosting the platform, storing studies and reports, running AI image models | Reports, images and review data are stored and processed | United States | AWS Business Associate Addendum |
-| Amazon Web Services, Inc. | Amazon Bedrock | AI language model that reads report text | Report text in each request. Bedrock does not store it or use it to train models. | AWS regions in the United States | AWS Business Associate Addendum |
-| Microsoft Corporation | Azure Communication Services (Email) | Review assignments, notifications and sign-in links | Recipient name and email address, and the notification text. Accession numbers are off by default. Emails never contain report text or images. | United States (the data location of our email service) | Microsoft HIPAA Business Associate Agreement, included in the Microsoft Data Protection Addendum |
-| Microsoft Corporation | Microsoft Azure (container hosting) | Running some AI image models in containers that Zauron operates | Images of the studies those models read | United States (East US 2) | Microsoft HIPAA Business Associate Agreement, included in the Microsoft Data Protection Addendum |
-
-Azure container hosting is not used when **Restrict outside vendors** is on (see below).
+| Subprocessor | Service | Used for | Purpose | Customer data | Location | Agreement |
+|---|---|---|---|---|---|---|
+| Amazon Web Services, Inc. | Compute, database, storage, backups, encryption keys, monitoring | Instances hosted in AWS | Hosting the platform, storing studies and reports | Reports, images and review data are stored and processed | United States | AWS Business Associate Addendum |
+| Amazon Web Services, Inc. | Amazon Bedrock | Instances hosted in AWS | AI language model that reads report text | Report text in each request. Bedrock does not store it or use it to train models. | AWS regions in the United States | AWS Business Associate Addendum |
+| Microsoft Corporation | Microsoft Azure (compute, database, storage, backups, encryption keys, monitoring) | Instances hosted in Azure | Hosting the platform, storing studies and reports | Reports, images and review data are stored and processed | United States | Microsoft HIPAA Business Associate Agreement, included in the Microsoft Data Protection Addendum |
+| Microsoft Corporation | Azure OpenAI in Azure AI Foundry | Instances hosted in Azure | AI language model that reads report text | Report text in each request. Microsoft does not use it to train models. | Azure regions in the United States | Microsoft HIPAA Business Associate Agreement, included in the Microsoft Data Protection Addendum |
+| Amazon Web Services, Inc. or Microsoft Corporation | AI image model containers that Zauron operates | Every instance, in the cloud chosen for it | Running AI image models | Images of the studies those models read | United States | AWS Business Associate Addendum or Microsoft HIPAA Business Associate Agreement |
+| Microsoft Corporation | Azure Communication Services (Email) | Every instance | Review assignments, notifications and sign-in links | Recipient name and email address, and the notification text. Accession numbers are off by default. Emails never contain report text or images. | United States (the data location of our email service) | Microsoft HIPAA Business Associate Agreement, included in the Microsoft Data Protection Addendum |
 
 ### Optional subprocessors
 
@@ -32,11 +32,11 @@ These are used only when switched on for your site, and never when **Restrict ou
 
 Each Cloud customer has a **Restrict outside vendors** setting. It is **on by default for new Cloud customers**. While it is on:
 
-- AI image models run only inside the Guardian Pro Cloud platform in AWS. Requests to any other model host are refused.
-- The AI language model is Amazon Bedrock only.
+- AI image models run only in the containers Zauron operates in the cloud chosen for your instance. Requests to any other model host are refused.
+- The AI language model is the one in your instance's hosting cloud: Amazon Bedrock in AWS, or Azure OpenAI in Azure.
 - Datadog is not used for your site.
 
-With the setting on, the only subprocessors that handle your data are AWS (hosting and Amazon Bedrock) and Microsoft (email).
+With the setting on, the only subprocessors that handle your data are AWS, Microsoft, or both, depending on where your instance and its AI image models run. Microsoft always provides email.
 
 ## Dedicated installation
 
