@@ -25,7 +25,6 @@ These are used only when switched on for your site, and never when **Restrict ou
 
 | Subprocessor | Purpose | Customer data |
 |---|---|---|
-| RunPod | GPU acceleration for DataForge annotation tools (segmentation) | Images sent for segmentation |
 | Datadog, Inc. | Application monitoring, when your organization asks for it | Application logs for your site |
 | AI model vendors | AI image models hosted by their own vendor, when you license one | Images of the studies the model reads |
 
@@ -35,7 +34,7 @@ Each Cloud customer has a **Restrict outside vendors** setting. It is **on by de
 
 - AI image models run only inside the Guardian Pro Cloud platform in AWS. Requests to any other model host are refused.
 - The AI language model is Amazon Bedrock only.
-- RunPod and Datadog are not used for your site.
+- Datadog is not used for your site.
 
 With the setting on, the only subprocessors that handle your data are AWS (hosting and Amazon Bedrock) and Microsoft (email).
 
