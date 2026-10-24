@@ -14,8 +14,8 @@ Guardian Pro Cloud is hosted in Amazon Web Services (AWS) in the United States. 
 |---|---|---|---|---|---|
 | Amazon Web Services, Inc. | Compute, database, storage, backups, encryption keys, monitoring | Hosting the platform, storing studies and reports, running AI image models | Reports, images and review data are stored and processed | United States | AWS Business Associate Addendum |
 | Amazon Web Services, Inc. | Amazon Bedrock | AI language model that reads report text | Report text in each request. Bedrock does not store it or use it to train models. | AWS regions in the United States | AWS Business Associate Addendum |
-| Microsoft Corporation | Azure Communication Services (Email) | Review assignments, notifications and sign-in links | Recipient name and email address, and the notification text. Accession numbers are off by default. Emails never contain report text or images. | United States | Microsoft HIPAA Business Associate Agreement |
-| Microsoft Corporation | Microsoft Azure (container hosting) | Running some AI image models in containers that Zauron operates | Images of the studies those models read | United States (East US 2) | Microsoft HIPAA Business Associate Agreement |
+| Microsoft Corporation | Azure Communication Services (Email) | Review assignments, notifications and sign-in links | Recipient name and email address, and the notification text. Accession numbers are off by default. Emails never contain report text or images. | United States (the data location of our email service) | Microsoft HIPAA Business Associate Agreement, included in the Microsoft Data Protection Addendum |
+| Microsoft Corporation | Microsoft Azure (container hosting) | Running some AI image models in containers that Zauron operates | Images of the studies those models read | United States (East US 2) | Microsoft HIPAA Business Associate Agreement, included in the Microsoft Data Protection Addendum |
 
 Azure container hosting is not used when **Restrict outside vendors** is on (see below).
 
