@@ -21,6 +21,7 @@ This documentation provides comprehensive guidance for Guardian Pro, an AI-enric
 - [AI Models](docs/models.md)
 - [Compliance & Accreditation](docs/compliance.md)
 - [Security](docs/security.md)
+- [Subprocessors](docs/subprocessors.md)
 
 ## DataForge
 
