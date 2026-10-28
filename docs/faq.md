@@ -34,6 +34,10 @@ Cases assigned during your absence will automatically age out after your organiz
 
 Medicare requires each radiology department to maintain accreditation, which typically includes regular peer review of each radiologist — though not necessarily active participation as a reviewer. We recommend full participation but are happy to coordinate with your department's existing peer review strategy. Additionally, Zauron Labs offers a separate service leveraging our Radiology Network to perform external peer reviews, filling any gaps in your program and helping maintain compliance.
 
+### Can we leave a radiologist's reports out of peer review?
+
+Yes. An administrator turns off **Peer reviewed** for that person in **Admin → Users**. Guardian then never chooses their reports for peer review, including external peer review by Zauron radiologists. Cases already assigned stay assigned, and any of their cases can still be flagged by hand with Flag Case. Turn it back on at any time; their new reports are eligible again from the next assignment run.
+
 ## Integrations
 
 ### Can we use our own viewer or worklist instead of Guardian's screens?
