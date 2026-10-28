@@ -22,6 +22,7 @@ Download our [Configuration Options Worksheet (CSV)](configuration-options.csv) 
 | Target Positive Predictive Value for Discrepancy Inclusion | 0.5 | AI threshold for flagging potential discrepancies | |
 | Residents and Fellows Receive Emails | Yes | Whether trainees receive email notifications | |
 | Residents and Fellows Participate in Random QC | Yes | Whether trainees are assigned random quality control sampling | |
+| Radiologists whose reports are not peer reviewed | None | Per radiologist; their reports are never chosen for peer review | |
 | AI Model Inclusion Policy | Zauron Approval | Policy governing which AI models may be integrated | |
 | AI Model Update Policy | Zauron Approval | Policy governing AI model version updates | |
 
@@ -59,6 +60,9 @@ Determines whether trainees receive notifications of interesting cases. Enable t
 
 **Residents and Fellows Participate in Random QC**
 Controls trainee inclusion in random quality sampling. Consider your accreditation requirements and educational objectives when configuring this setting. Trainees are required by Graduate Medical Education mandates to do a Quality Improvement project, this can satisfy the requirement for all of your trainees. 
+
+**Radiologists whose reports are not peer reviewed**
+Each user has a **Peer reviewed** switch in the dashboard **Admin → Users** list. It is on by default. When it is off, Guardian never chooses that radiologist's reports for peer review: not for random or AI-flagged peer review, not for Community Watch, and not for external peer review by Zauron radiologists. Any of their cases can still be flagged by hand with Flag Case, and reviews already assigned stay assigned. The switch only controls whose reports are reviewed; whether someone reviews other radiologists' cases is a separate setting.
 
 ### AI Configuration
 

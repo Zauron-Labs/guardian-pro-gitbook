@@ -9,5 +9,6 @@ Quality Champion,,Designated individual responsible for quality oversight and di
 Target Positive Predictive Value for Discrepancy Inclusion,0.5,AI threshold for flagging potential discrepancies,
 Residents and Fellows Receive Emails,Yes,Whether trainees receive email notifications,
 Residents and Fellows Participate in Random QC,Yes,Whether trainees are assigned random quality control sampling,
+Radiologists whose reports are not peer reviewed,None,Per radiologist; their reports are never chosen for peer review,
 AI Model Inclusion Policy,Zauron Approval,Policy governing which AI models may be integrated,
 AI Model Update Policy,Zauron Approval,Policy governing AI model version updates,
