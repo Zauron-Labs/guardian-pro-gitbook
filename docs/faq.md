@@ -43,3 +43,16 @@ Yes. An administrator turns off **Peer reviewed** for that person in **Admin →
 ### Can we use our own viewer or worklist instead of Guardian's screens?
 
 Yes. With the [Guardian API](guardian-api.md), your viewer or worklist can read exams and AI findings and complete peer reviews, while Guardian keeps choosing and assigning the cases. Ask Zauron to switch the API on for your site; your administrators then create API keys.
+
+## Images and retention
+
+### How long does Guardian keep study images, and what happens if a study is gone when someone needs it?
+
+Your PACS stays the system of record. Guardian keeps its own viewer copy of a study for as long as your organization's data retention settings allow, then removes it. Studies that are in use are kept longer:
+
+- **Peer review assignments** stay available for your review window (30 days by default) after they are assigned.
+- **Flag Case and other reviews outside an assignment** stay available for the same window after the last activity on the review: when the case was flagged, submitted, finalized or last worked on by a reviewer.
+- **Reviewed studies** with a determination your site keeps, a Great Call or a technical issue are kept for the longer period in your retention settings.
+- **Peer Learning PowerPoint** cases stay available while the slide links work (up to 28 days).
+
+When a review or a PowerPoint export needs a study whose images are no longer on Guardian, or were never copied to Guardian, Guardian retrieves it from your PACS again automatically. The review or slide link shows the images once that retrieve finishes.
