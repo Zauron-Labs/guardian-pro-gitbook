@@ -12,11 +12,11 @@ Administrators,Second administrator (name and work email),,Optional
 VPN,"VPN gateway make, model and software version",,
 VPN,VPN gateway public IP address,,Must be static
 VPN,IKE identity your gateway sends,,"Must be the gateway's public IP address. A gateway behind NAT, or one that sends a hostname or private address, can't connect"
-VPN,Backup or second gateway?,,One gateway per organization is supported today; tell Zauron if you need more
+VPN,Sites with their own firewall? (site and gateway public IP),,"One gateway for all sites is preferred. A site with its own firewall can have its own gateway: give its public IP and which internal systems sit behind it"
 VPN,Gateway supports the tunnel settings (Yes / No),,"IKEv2, pre-shared key, AES-256, SHA-256, DH group 14. See Cloud Onboarding > Tunnel settings"
 VPN,Gateway set to respond only (Yes / No),,Zauron's gateway starts the tunnel
 VPN,Is your PACS or reporting system hosted by a provider that serves several organizations from one gateway? (provider name),,See Cloud Onboarding > Hosted platforms serving several organizations
-VPN,"Internal systems Guardian must reach: PACS, reporting system, interface engine, LDAP (IP address and role of each)",,List individual hosts where possible; any subnet must be /24 or smaller. This is your side of the tunnel's traffic
+VPN,"Internal systems Guardian must reach: PACS, reporting system, interface engine, LDAP (IP address and role of each)",,"List individual hosts where possible; together they must fit in 256 addresses (/24). With several gateways, say which gateway each system is behind. This is your side of the tunnel's traffic"
 VPN,Guardian side of the tunnel,,Zauron provides your organization's Guardian IP address (a single public /32). Route it into the tunnel
 VPN,Pre-shared key,,Never by email or in this sheet. Zauron sends a one-time secure link
 VPN,Firewall rules in place (Yes / No),,"UDP 500 and 4500 to Zauron's gateway, plus the inside-tunnel ports. See Cloud Onboarding > Firewall rules"
@@ -39,9 +39,10 @@ Reporting,HL7: interface engine product and version,,
 Reporting,HL7: interface engine IP addresses,,Must be among the internal systems listed under VPN
 Reporting,HL7: HL7 version and character set (MSH-12 / MSH-18),,
 Reporting,HL7: sending application and facility (MSH-3 / MSH-4),,
+Reporting,HL7: receiving application (MSH-5) for this feed,,"Only when several HL7 feeds send to Guardian (e.g. one RIS per site): each feed sends its own agreed value. See HL7 Report Interface > MSH"
 Reporting,HL7: do timestamps include a UTC offset?,,"If not, give the time zone they use"
 Reporting,HL7: accession number field,,"OBR-3 (default), OBR-2, OBR-18 or OBR-19"
-Reporting,HL7: radiologist ID in OBR-32,,Your internal ID or NPI
+Reporting,HL7: radiologist ID in OBR-32,,"Your internal ID or NPI. If another site's system uses the same IDs for different radiologists, tell Zauron"
 Reporting,HL7: report statuses sent,,Preliminary / Final / Corrected. See HL7 Report Interface
 Radiologists,Radiologist roster attached (Yes / No),,"Name, work email, reporting-system ID, NPI and subspecialty for each reading radiologist"
 Sign-in,Sign-in method,,SSO (OIDC) / LDAP / email sign-in links

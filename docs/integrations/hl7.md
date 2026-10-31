@@ -77,7 +77,7 @@ R = required (message is rejected `AE` without it or unusable), RE = required if
 |-------|------|-----|-------------------|
 | MSH-3 | Sending application | RE | Your system's name, agreed at onboarding (e.g. `RIS`, `PS360`). |
 | MSH-4 | Sending facility | RE | Your facility code. |
-| MSH-5 | Receiving application | O | `GUARDIAN` unless another value is agreed. |
+| MSH-5 | Receiving application | O | `GUARDIAN` unless another value is agreed. **Several feeds to one customer** (e.g. one RIS per site): each feed sends its own agreed value, and at most one feed keeps the default; Guardian assigns each message to its feed by this field. |
 | MSH-6 | Receiving facility | O | Agreed value, or empty. |
 | MSH-7 | Date/time of message | R | `YYYYMMDDHHMMSS[±ZZZZ]`. See §5 for time zones. |
 | MSH-9 | Message type | R | `ORU^R01` (`ORU^R01^ORU_R01` is fine). `ACK` and other types are rejected. |

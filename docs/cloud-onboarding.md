@@ -33,11 +33,21 @@ Guardian connects to the systems inside your network (PACS, reporting system and
 ### How the tunnel works
 
 - Zauron assigns your organization a **dedicated public IP address**. Guardian's side of your tunnel is that single address. Your PACS, reporting system and directory talk to Guardian at it.
-- You tell Zauron your **VPN gateway's public IP address** and the **internal addresses of the systems Guardian must reach**. Together these define the tunnel's traffic. List individual hosts where possible; any subnet must be /24 or smaller.
+- You tell Zauron your **VPN gateway's public IP address** and the **internal addresses of the systems Guardian must reach**. Together these define the tunnel's traffic. List individual hosts where possible: all the systems you list, together, must fit in 256 addresses (a /24), and a subnet uses every address it covers.
 - Your gateway must have a **static public IP address** and use it as its IKE identity. A gateway behind NAT, or one that identifies itself by a hostname or private address, can't connect.
-- One gateway per organization is supported today. Tell Zauron early if you need a backup gateway.
+- **One gateway for all your sites is preferred.** A site with its own firewall can have its own gateway: each extra gateway has its own tunnel to Zauron for the systems at that site, uses the same Guardian address, and can have its own pre-shared key. Tell Zauron which systems sit behind which gateway. See [Several sites in one organization](#several-sites-in-one-organization).
 - Zauron's gateway starts the tunnel and restarts it if it drops. Set your gateway to **respond only** (not to start the tunnel itself). If both sides start it at the same time, your gateway can be left holding a duplicate, stale tunnel. Zauron's gateway always replaces an older tunnel with your gateway when a new one comes up, so only one stays in use.
 - Traffic inside the tunnel is encrypted by IPsec, so DICOM and HL7 inside the tunnel don't need their own TLS.
+
+### Several sites in one organization
+
+One Guardian organization can take studies and reports from several sites, each with its own PACS and its own reporting feed:
+
+- **PACS:** list each PACS (AE title, internal IP address, DICOM port). Every PACS sends to your organization's one Guardian AE title and DICOM port.
+- **HL7 feeds:** every interface engine sends to your organization's one HL7 port. When more than one feed sends there, Guardian tells them apart by **MSH-5 (receiving application)**: agree a value per feed with Zauron (for example one per site's RIS). At most one feed may keep the default value; a message whose MSH-5 matches no feed isn't assigned to a site. See the [HL7 Report Interface](integrations/hl7.md).
+- **VPN:** route every site through one gateway where you can. A site behind its own firewall gets its own gateway (see [How the tunnel works](#how-the-tunnel-works)); its PACS and interface engine then sit behind that gateway.
+- **Accession numbers** must be unique across all your sites: Guardian matches reports to studies by accession number within your organization.
+- **Radiologists:** if two sites' reporting systems use the same ID for different radiologists, tell Zauron; each feed's IDs can be kept separate. A radiologist who reads for several sites is recognized as one person through their work email or NPI.
 
 ### Hosted platforms serving several organizations
 
@@ -62,7 +72,7 @@ These settings are the same for every customer.
 
 | Direction | Between | Ports |
 |-----------|---------|-------|
-| Internet, both ways | Your VPN gateway ↔ Zauron's VPN gateway | UDP 500 and UDP 4500 |
+| Internet, both ways | Your VPN gateway (each one, if a site has its own) ↔ Zauron's VPN gateway | UDP 500 and UDP 4500 |
 | Inside the tunnel, from your network to Guardian | Your PACS → your Guardian address | The DICOM port Zauron assigns you |
 | Inside the tunnel, from your network to Guardian | Your interface engine → your Guardian address | The HL7 port Zauron assigns you (HL7 only) |
 | Inside the tunnel, from Guardian to your network | Your Guardian address → your PACS | Your PACS DICOM port |
@@ -98,7 +108,7 @@ Guardian reads finalized radiology reports from one of these sources per site:
 | **HL7 v2 (ORU^R01)** | Your interface engine sends finalized reports to Guardian over MLLP. See the [HL7 Report Interface](integrations/hl7.md). |
 | **PowerScribe database (SQL Server)** | Guardian reads finalized reports from the PowerScribe database with a read-only SQL Server login on a static port, when the web API isn't used. Windows sign-in isn't supported. |
 
-Several sites can share one report source.
+Several sites can share one report source, or each site can have its own (see [Several sites in one organization](#several-sites-in-one-organization)).
 
 Also send a **radiologist roster**: name, work email, reporting-system ID, NPI and subspecialty for each reading radiologist. Guardian uses the reporting-system ID to match each report to its radiologist.
 
