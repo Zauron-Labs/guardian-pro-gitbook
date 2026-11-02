@@ -123,7 +123,7 @@ Responses are JSON and are sent with `Cache-Control: no-store`.
 
 ## Task feed (HL7 tasks to your worklist)
 
-Guardian can create its review tasks directly in your worklist (for example Agfa Enterprise Imaging), so reviewers start from the worklist they already use. Guardian keeps choosing and assigning the cases; the review itself is done in Guardian.
+Guardian can create its review tasks directly in your worklist (for example Agfa Enterprise Imaging), so reviewers start from the worklist they already use. Guardian keeps choosing and assigning the cases; the reviewer opens the case from the task in Guardian's read-only viewer and records the review in your worklist.
 
 **What is sent**
 
@@ -133,13 +133,18 @@ Guardian can create its review tasks directly in your worklist (for example Agfa
 | Peer learning | The original reader, for their own case where Guardian's AI and their report disagree |
 | Interesting case | The reviewer the case was sent to |
 
-Each task is one HL7 v2.5.1 **OMI^O23** order over MLLP, inside your site-to-site VPN:
+Each task is one HL7 v2.5.1 **OMI^O23** new order (`NW`) over MLLP, inside your site-to-site VPN. It carries:
 
-- **New task** (`NW`): patient ID, accession number and Study Instance UID of the original study, the assignee, a neutral comment and a link that opens the task in Guardian.
-- **Completed** (`SC`, order status `CM`) when the work is done in Guardian, and **withdrawn** (`CA`) when the task is deferred, reassigned or expires.
-- No report text, review results or names other than the assignee's are sent.
+- the accession number and Study Instance UID of the original study (no patient ID, name or other demographics: there is no PID segment);
+- the assignee, in ORC-12 and OBR-32, with the identifier type (NPI, worklist user ID or email) your site chose;
+- a one-line comment: the task type, then the AI finding or interesting-case snippet when there is one;
+- a link that opens the case in Guardian.
 
-Your worklist acknowledges each message. Messages for one task always arrive in order; an unacknowledged message is retried after 1, 5, 15 and 60 minutes, then shown to your Guardian administrators, who can send it again.
+By default Guardian sends nothing else for a task: no status or cancel messages. The reviewer completes the task in your worklist, and nothing comes back to Guardian. No report text, review results or names other than the assignee's are sent.
+
+**Completing tasks in Guardian instead.** Zauron can set a task type to be completed in Guardian. Its link then opens the case with Guardian's review options for the assignee (your worklist shows the task only to them, so Guardian takes whoever opens it to be the assignee, with no Guardian sign-in, and logs that the identity came from your worklist). Guardian then also sends a status change (`SC`, order status `CM`) when the review is completed, and a cancel (`CA`) when the task is withdrawn, so your worklist can close it. Both use the task's reference from the new order. A change applies only to tasks sent after it.
+
+Your worklist acknowledges each message. An unacknowledged message is retried after 1, 5, 15 and 60 minutes, then shown to your Guardian administrators, who can send it again.
 
 **Turning it on**
 
@@ -147,7 +152,9 @@ The task feed is **off by default**. Zauron turns it on for your site and sets t
 
 **Opening a task**
 
-The link in each task is `https://<your Guardian address>/launch/<reference>`. On its own it grants nothing. When a user opens it, your worklist adds who is signed in, signed with a key Zauron gives you (HMAC-SHA256, valid for 2 minutes, usable once). Guardian matches that user to a Guardian user (work email, then NPI, then the **Worklist user ID** an administrator can set on the user) and opens the case only for the task's assignee. Without a valid signature, the user signs in to Guardian first.
+The link in each task is `https://<your Guardian address>/launch/<reference>/<expiry>/<signature>`. Guardian signs it when it sends the task (HMAC-SHA256, with a key that never leaves Guardian), so your worklist only needs to open it unchanged. It opens that one case in Guardian's viewer (read-only, unless the task type is completed in Guardian) with no Guardian sign-in, and can be reopened until it expires (30 days by default, set with you, and never after the study's images are removed).
+
+The link names no user: anyone holding it can open that case, read-only, until it expires. Your worklist must show each task only to its assignee, and Guardian only accepts opens from your site's network when you have set web access ranges. Every open is logged with the task, time and source address. Your administrators can revoke a task's link under **Admin → Settings → Task feed**; a task withdrawn in Guardian before it was opened, or whose link was revoked, shows a "task closed" page.
 
 The detailed message specification is shared with your integration team during setup.
 
