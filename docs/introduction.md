@@ -28,7 +28,7 @@ Guardian Pro is a comprehensive AI-powered platform designed to enhance peer rev
 
 ### AI Assurance & Monitoring
 - **Model Zoo**: License AI models and control which procedures they run on
-- **Structured Assessments**: Measure a model against radiologist ground truth on your own studies, in [DataForge](dataforge/overview.md)
+- **Structured Assessments**: Check a model's detections on your own studies and tune its display threshold from the results, in [DataForge](dataforge/overview.md)
 - **Performance Tracking**: Monitor how your AI models perform on real clinical data
 - **Quality Metrics**: Gain insights into model accuracy and reliability
 - **Continuous Improvement**: Use data-driven insights to refine your AI implementations
