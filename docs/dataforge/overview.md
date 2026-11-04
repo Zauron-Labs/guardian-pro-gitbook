@@ -34,12 +34,14 @@ A labeling project moves through these steps:
 
 From the Guardian dashboard's **Model Zoo**, a site admin or quality champion can start a **structured assessment** of a licensed model. Guardian creates a dedicated DataForge project for it:
 
-- The project holds the cohort of studies the model ran on, with the model's results and the matching radiology reports.
-- Studies are sampled across the model's confidence range, so reviewers see both high-confidence and borderline results.
+- The project holds recent studies the model flagged, with the model's detections and the matching radiology reports. Studies the model did not flag are not part of the assessment.
+- Studies are chosen around the model's current display threshold, so reviewers see both clear and borderline detections.
+- For each detection, a reviewer answers whether it is correct. When a correct detection was on a study the report appeared to miss, the reviewer can record that the report does document it.
+- The results estimate how often detections are correct near the display threshold, and how many real misses the model caught. They show whether the threshold looks too low, too high or about right. Changing the threshold stays your decision.
 - The assessment is locked. Its cohort, ground truth and model results cannot be changed after launch, so the results can be relied on for governance.
 - DataForge opens in a new tab as soon as the assessment is launched and shows progress while the studies are prepared.
 
-Each assessment gets its own project, so a later assessment never changes the results of an earlier one.
+Each assessment gets its own project, so a later assessment never changes the results of an earlier one. To review a cohort you choose yourself, use a labeling project.
 
 ## Analytics
 

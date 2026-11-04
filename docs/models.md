@@ -39,7 +39,7 @@ Need a use case that isn't listed? Contact your Zauron representative. New integ
 - **Licensing:** models are licensed per customer. Nothing is enabled until the models in your agreement are turned on for your organization.
 - **Clinical rules:** your site decides how each licensed model is used, in the dashboard **Model Zoo**: which procedures trigger it (modality, body part, CPT), which findings count, and its confidence thresholds.
 - **Operating thresholds:** each use case runs at a threshold chosen so the cases sent to reviewers are worth their time. Your site can adjust it, and the peer review options set how many AI-selected cases reach each radiologist (see [Options](options.md)).
-- **Measure before you rely on it:** from the Model Zoo, a site admin or champion can start a [structured assessment](dataforge/overview.md#model-validation-and-structured-assessments) to measure a model against radiologist ground truth on your own studies.
+- **Measure before you rely on it:** from the Model Zoo, a site admin or champion can start a [structured assessment](dataforge/overview.md#model-validation-and-structured-assessments) to check a model's detections on your own studies and tune its display threshold from the results.
 
 ## How models run
 
