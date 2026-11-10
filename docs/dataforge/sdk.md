@@ -303,6 +303,34 @@ Other image methods:
 - `data-only`: a zip of images and reports.
 - `qc-packet`: a zip.
 
+### Transfer packages (move a dataset to another install)
+
+A **de-identified transfer package** is a zip of this project's studies for another Guardian install: `images/<study>/*.dcm`, `reports/reports.csv`, `annotations/` (`labels.csv`, `labels.json`, `label_contract.json`), a `readme.md` that says what the package holds, who packaged it and where it came from, `transfer_manifest.json` and `export_provenance.json`. Every study is included, whichever way it reached the project. Before packing, each file is de-identified with the **project's own transfer salt** (created on the first package, never this install's own salt), then re-read and checked: accession numbers, patient ids and names become one-way hashed tokens; study, series and instance identifiers become salted hashes of the originals (still valid UIDs); dates and times are shifted by one fixed offset for the project, so a patient's studies keep their order across packages; private tags are removed. A file that still carries an original identifier fails the whole export. The project's export log records who built each package, when, where it went and the salt's fingerprint; a project admin can reveal the salt in Project Settings, and that reveal is logged.
+
+| Method | Returns | Notes |
+|--------|---------|-------|
+| `transfer_exports.create(destination="download", *, server_folder_path=None, cloud=None, wait=False, wait_timeout=7200, poll_interval=5)` | `TransferExport` (`id`, `status`, `phase`, `destination_kind`, `destination`, `salt_fingerprint`, `total_studies`, `processed_studies`, `failed_studies`, `error`, `package_bytes`, `package_checksum`, `download_available`, `created_by_name`, `created_at`) | `destination` is `download`, `server_folder` (absolute folder on the DataForge server, under its storage roots) or `cloud_bucket`. `cloud` is `{"provider": "azure", "container_sas_url": ..., "prefix": ...}` or `{"provider": "s3", "bucket": ..., "region": ..., "access_key_id": ..., "secret_access_key": ..., "session_token": ..., "prefix": ...}`; credentials are used for that upload only and are not stored. |
+| `transfer_exports.list()` | `list[TransferExport]` | The export log, newest first. |
+| `transfer_exports.get(export_id)` / `transfer_exports.wait(export_id)` | `TransferExport` | `wait` raises `RuntimeError` if the package failed. |
+| `transfer_exports.download(export_id, path)` | `Path` | The finished zip (`download` destination only). |
+
+**Import at the receiving install** is one action: `transfer_imports.create("transfer.zip", wait=True)` (or Project Settings → Export → *Import a transfer package*). It ingests the images **without** de-identification, so the package identifiers are kept, adds any label the package uses that the project's contract lacks, then imports the reports and the human labels. Study ids in the package are its new study identifiers, so reports and labels link to the images as they are.
+
+| Method | Returns | Notes |
+|--------|---------|-------|
+| `transfer_imports.create(file, *, wait=False, wait_timeout=7200, poll_interval=5)` | `TransferImport` (`id`, `status`, `phase`, `package_name`, `packaged_by`, `origin`, `packaged_at`, `salt_fingerprint`, `studies`, `instances`, `reports_imported`, `reports_failed`, `labels_added`, `annotations_created`, `annotations_skipped`, `annotations_failed`, `error`) | `file` is the package zip on this workstation, streamed to the server. Labels already in the project are skipped; studies a reviewer has finalized are refused. |
+| `transfer_imports.list()` / `transfer_imports.get(import_id)` / `transfer_imports.wait(import_id)` | `TransferImport` | The import log. `wait` raises `RuntimeError` if the import failed. |
+
+```python
+# Sending install
+pkg = client.transfer_exports.create("download", wait=True)
+client.transfer_exports.download(pkg.id, "transfer.zip")
+
+# Receiving install (a different site, its own project key)
+done = other_site.transfer_imports.create("transfer.zip", wait=True)
+print(done.studies, "studies,", done.annotations_created, "labels")
+```
+
 ### DataForgeAdmin(base_url=None, api_key=None, *, timeout=120, verify_tls=True, ca_bundle=None, max_retries=3, backoff=0.5)
 
 The admin client. `api_key` defaults to `DATAFORGE_ADMIN_API_KEY` and must start with `dfa_`. The other options are the same as for `DataForgeClient`.
@@ -373,6 +401,10 @@ Output is JSON.
 | `dataforge annotations import FILE [--no-skip-existing]` | Import ground truth. `FILE` is a JSON list of objects with `study_event_id`, `label_code`, `label_kind`, and location fields. |
 | `dataforge download STUDY_ID -o DIR` | Download a study's images. |
 | `dataforge export {csv,annotation-packet,data-only,qc-packet} -o FILE [--gt-agreed-only]` | Download an export. |
+| `dataforge transfer create [--destination download\|server_folder\|cloud_bucket] [--server-folder DIR] [--provider azure\|s3 …] [--wait]` | Build a de-identified transfer package. Cloud credentials come from the environment (`AZURE_STORAGE_CONTAINER_SAS_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) unless given as options. |
+| `dataforge transfer list` / `dataforge transfer status ID` | The export log / one package. |
+| `dataforge transfer download ID -o FILE` | Save a finished package. |
+| `dataforge transfer import FILE [--wait]` | Import a transfer package into this project (images, label contract, reports, labels). |
 | `dataforge projects list` | Admin key: all projects. |
 | `dataforge projects create NAME [--workflow labeling\|model_validation] [--description D] [--labels FILE]` | Admin key: create a project. |
 | `dataforge projects update ID [--name N] [--description D]` | Admin key: rename or re-describe a project. |
@@ -433,6 +465,7 @@ except ApiError as exc:
 - **Header only.** The SDK sends the key only in the `Authorization` header. The server refuses keys passed in a URL.
 - **TLS.** Certificates are verified by default. Use `ca_bundle` for a private certificate authority rather than turning verification off.
 - **Downloaded images** follow the project's de-identification. Store them under your organization's data-handling rules.
+- **Transfer packages** are de-identified with the project's transfer salt and checked file by file before they leave. The salt is kept encrypted; revealing it is recorded in the export log. Treat a revealed salt like a key: with it, someone who also holds the original identifiers can recompute the package tokens.
 
 ## Limits
 
