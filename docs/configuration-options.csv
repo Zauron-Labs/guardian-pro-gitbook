@@ -6,6 +6,8 @@ RadPeer threshold for notifying the quality champion,2b,Score at which quality l
 Number of cases (in last 3 months) to be qualified to peer review a case,10,Minimum recent case volume required to serve as a peer reviewer,
 Minimum number of random exams per week,2,Baseline random sampling for quality assurance,
 Quality Champion,,Designated individual responsible for quality oversight and discrepancy adjudication,
+Report author shown to the champion,After the champion picks a score,"When a champion reviewing an escalated case sees who wrote the report: after scoring, always, or never",
+Email the report author the champion's final decision,Off,Per notification rule; can also send the champion a copy for their records,
 Target Positive Predictive Value for Discrepancy Inclusion,0.5,AI threshold for flagging potential discrepancies,
 Residents and Fellows Receive Emails,Yes,Whether trainees receive email notifications,
 Residents and Fellows Participate in Random QC,Yes,Whether trainees are assigned random quality control sampling,
