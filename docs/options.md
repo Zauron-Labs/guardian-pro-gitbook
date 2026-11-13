@@ -19,6 +19,8 @@ Download our [Configuration Options Worksheet (CSV)](configuration-options.csv) 
 | Number of cases (in last 3 months) to be qualified to peer review a case | 10 | Minimum recent case volume required to serve as a peer reviewer | |
 | Minimum number of random exams per week | 2 | Baseline random sampling for quality assurance | |
 | Quality Champion | | Designated individual responsible for quality oversight and discrepancy adjudication | |
+| Report author shown to the champion | After the champion picks a score | When a champion reviewing an escalated case sees who wrote the report: after scoring, always, or never | |
+| Email the report author the champion's final decision | Off | Per notification rule; can also send the champion a copy for their records | |
 | Target Positive Predictive Value for Discrepancy Inclusion | 0.5 | AI threshold for flagging potential discrepancies | |
 | Residents and Fellows Receive Emails | Yes | Whether trainees receive email notifications | |
 | Residents and Fellows Participate in Random QC | Yes | Whether trainees are assigned random quality control sampling | |
@@ -42,7 +44,13 @@ Guardian Pro's AI engine identifies cases with unusual findings, teaching value,
 ### Quality Assurance Settings
 
 **RadPeer threshold for notifying the quality champion**
-Uses the standard RadPeer scoring scale (1-4). A score of 2b or higher indicates a discrepancy that is likely clinically significant. When this threshold is met, the designated Quality Champion receives automatic notification for review and follow-up.
+Uses the standard RadPeer scoring scale (1-4). A score of 2b or higher indicates a discrepancy that is likely clinically significant. When this threshold is met, the designated Quality Champion receives automatic notification for review and follow-up, and the case is pinned at the top of their Peer Review worklist until it is finalized.
+
+**Report author shown to the champion**
+By default the champion scores an escalated case blind: the report author's name appears once the champion picks a score, and Guardian records each time the name is shown together with the score picked at that moment. You can instead show the author from the start (**Always**) or never (**Hidden**). The champion's notification email names the author only under **Always**.
+
+**Email the report author the champion's final decision**
+Off by default and set per notification rule. When a champion finalizes a case and the final score matches the rule, the report author receives an email with the final score, the champion's name and comments, and a read-only link to the case; the peer reviewer is not named. A case the champion downgrades below the rule sends nothing. Optionally the finalizing champion receives a copy, sent only after the author's email went out, to confirm the send and keep for their records.
 
 **Number of cases (in last 3 months) to be qualified to peer review a case**
 Ensures peer reviewers have recent, relevant experience. Radiologists must have interpreted at least this many cases in the past 90 days to be eligible as peer reviewers, maintaining expertise currency.
