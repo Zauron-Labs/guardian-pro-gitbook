@@ -13,25 +13,25 @@ Select **one** type before you complete the checklist. The application stack is 
 | **Azure** | Your Azure virtual network | Terraform module deploys into an **existing** VNet |
 | **AWS** | Your AWS VPC | Terraform module deploys into an **existing** VPC |
 | **Google** | Your Google Cloud VPC | Terraform module (confirm feature coverage with Zauron) |
-| **Self-hosted** | Your data center or private cloud | You provision the Ubuntu VM; Zauron deploys the container stack |
+| **Self-hosted** | Your data center or private cloud | You provision the Linux VM; Zauron's installer deploys the container stack and, if you want, the database on the same VM |
 
 Record the selected type on the installation checklist and send it to your Zauron representative.
 
-Studies, reports and results stay in your virtual network. Guardian doesn't send DICOM studies to Zauron.
+Studies, reports and results stay in your network. Guardian doesn't send DICOM studies to Zauron. Report text is read by an LLM: on AWS it stays in your account; on the other types it is sent to an endpoint Zauron runs for your installation (see [LLM endpoint](#llm-endpoint-requirements)).
 
 ## Prerequisites
 
 Before installing Guardian Pro, ensure you have:
 
 - **Installation type**: Azure, AWS, Google, or Self-hosted (see above)
-- **Virtual machine**: Ubuntu 22.04 LTS preferred (20.04+ accepted), with Docker 20.10+ and Docker Compose v2
+- **Virtual machine**: Ubuntu 22.04 LTS preferred (20.04+ accepted); Self-hosted also supports Debian 12 and RHEL, Rocky Linux, AlmaLinux or Oracle Linux 8–9. The installer adds Docker and Docker Compose v2
 - **Network**: Ability to whitelist CIDRs and configure firewall rules for DICOM, HTTPS, SQL Server, and outbound image pulls. Cloud types join an **existing** VNet/VPC; Self-hosted uses your LAN or private cloud network
 - **PACS integration**: Access to your Picture Archiving and Communication System for C-FIND, C-MOVE, and/or C-STORE, plus the PACS CIDR blocks for firewall rules
 - **Reporting system access**: PowerScribe (web API or SQL Server database) or an HL7 v2 report feed, plus the reporting-system CIDR blocks
-- **LLM**: **Llama 4 Scout**, used to read reports. It runs privately in the Guardian VPC / resource group in your cloud: on AWS, Amazon Bedrock in your account behind a VPC endpoint. Report text never leaves your network
+- **LLM**: **Llama 4 Scout**, used to read reports. On AWS it is Amazon Bedrock in your account behind a VPC endpoint, so report text stays in your account. On Azure, Google and Self-hosted it is an endpoint that Zauron runs in Microsoft Azure for your installation only; Guardian sends report text to it over HTTPS
 - **First administrators**: name and work email of at least one person who will administer Guardian
 - **DNS and TLS**: two host names in your domain, one for Guardian and one for Zauron's operator console, with DNS records and a certificate covering both (or Let's Encrypt)
-- **PostgreSQL database**: External or cloud-hosted PostgreSQL 13 or later (cloud Terraform provisions PostgreSQL 16 with private access)
+- **PostgreSQL database**: PostgreSQL 13 or later with pgvector 0.7 or later. Cloud Terraform provisions PostgreSQL 16 with private access; Self-hosted can run it on the Guardian VM (the installer sets up PostgreSQL 16) or use your own server
 - **Technical support**: IT administrator familiar with networking, DICOM, and database administration
 
 ## Installation Checklist
@@ -55,7 +55,7 @@ Alternatively, copy the table below into your preferred spreadsheet application.
 | Reporting CIDRs | [PowerScribe / interface engine CIDRs] | 443 / 1433 / 2575 | No | PowerScribe web API or SQL Server; HL7 feed into Guardian |
 | Admin CIDRs | [office / jump-host CIDRs] | 22 | No | SSH allowlist |
 | Web access CIDRs | [user network CIDRs] | 443 | No | Who may open Guardian in a browser |
-| PostgreSQL database | [private DB host] | 5432 | No | Version 13+ (Terraform uses 16); database guardian_pro; SSL; credentials exchanged securely |
+| PostgreSQL database | [private DB host, or the Guardian VM] | 5432 | No | Version 13+ with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely |
 | Guardian DICOM SCP | [VM IP] | 4000 | No | AE title GUARDIAN_SCP |
 | Guardian web address and console address | [guardian.yourdomain] and [console.guardian.yourdomain] | 443 | No | DNS records to the VM; certificate covering both, or Let's Encrypt |
 | PACS (remote SCP) | [PACS host] | [PACS port] | No | Remote AE title (site-specific) |
@@ -63,7 +63,7 @@ Alternatively, copy the table below into your preferred spreadsheet application.
 | First administrators | [names and work emails] | N/A | No | At least one |
 | Sign-in method | [SSO issuer / LDAP server / email links] | N/A | No | Secrets exchanged securely |
 | Outbound: Zauron container registry | zauron.azurecr.io | 443 | No | Registry credentials issued by Zauron for this installation |
-| LLM endpoint | [private endpoint in the Guardian VPC / resource group; Bedrock VPC endpoint on AWS] | 443 | No | Llama 4 Scout |
+| LLM endpoint | [AWS: Bedrock VPC endpoint in your account; Azure, Google, Self-hosted: Zauron-run endpoint for your installation] | 443 | No | Llama 4 Scout; allow outbound HTTPS to it |
 
 ### CSV Format (Copy & Paste)
 
@@ -80,7 +80,7 @@ PACS CIDRs,[PACS subnet CIDRs],104 / 11112 / [site],No,Used for firewall rules
 Reporting CIDRs,[PowerScribe / interface engine CIDRs],443 / 1433 / 2575,No,PowerScribe web API or SQL Server; HL7 feed into Guardian
 Admin CIDRs,[office / jump-host CIDRs],22,No,SSH allowlist
 Web access CIDRs,[user network CIDRs],443,No,Who may open Guardian in a browser
-PostgreSQL database,[private DB host],5432,No,Version 13+ (Terraform uses 16); database guardian_pro; SSL; credentials exchanged securely
+PostgreSQL database,"[private DB host, or the Guardian VM]",5432,No,Version 13+ with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely
 Guardian DICOM SCP,[VM IP],4000,No,AE title GUARDIAN_SCP
 Guardian web address and console address,[guardian.yourdomain] and [console.guardian.yourdomain],443,No,"DNS records to the VM; certificate covering both, or Let's Encrypt"
 PACS (remote SCP),[PACS host],[PACS port],No,Remote AE title (site-specific)
@@ -88,7 +88,7 @@ Reporting system,[PowerScribe host or interface engine],443 / 1433 / 2575,No,Ser
 First administrators,[names and work emails],N/A,No,At least one
 Sign-in method,[SSO issuer / LDAP server / email links],N/A,No,Secrets exchanged securely
 Outbound: Zauron container registry,zauron.azurecr.io,443,No,Registry credentials issued by Zauron for this installation
-LLM endpoint,[private endpoint in the Guardian VPC / resource group; Bedrock VPC endpoint on AWS],443,No,Llama 4 Scout
+LLM endpoint,"[AWS: Bedrock VPC endpoint in your account; Azure, Google, Self-hosted: Zauron-run endpoint for your installation]",443,No,Llama 4 Scout; allow outbound HTTPS to it
 ```
 
 **Instructions:**
@@ -104,26 +104,28 @@ LLM endpoint,[private endpoint in the Guardian VPC / resource group; Bedrock VPC
 These apply to every installation type.
 
 ### Virtual Machine
-- **Operating system**: Ubuntu 22.04 LTS preferred (20.04 LTS or later accepted)
+- **Operating system**: Ubuntu 22.04 LTS preferred (20.04 LTS or later accepted). Self-hosted also: Debian 12, RHEL / Rocky Linux / AlmaLinux / Oracle Linux 8–9
 - **Compute**: 4 vCPU / 16 GB RAM minimum (cloud Terraform default: Azure `Standard_D4s_v3` or AWS `m5.xlarge`). **12 vCPU / 32 GB RAM** is recommended for production
 - **Storage**: 64 GB OS disk plus a dedicated data disk (typical **512 GB**) mounted at `/opt/guardian-data` for cache, DICOMweb, precache, and logs
 - **SSH access**: SSH key for user **`zauron`** with sudo privileges
-- **Runtime**: Docker 20.10 or later and Docker Compose v2
+- **Runtime**: Docker 20.10 or later and Docker Compose v2 (the installer adds them)
 
 ### Database Requirements
 - **PostgreSQL**: Version 13 or later. Cloud Terraform modules provision **PostgreSQL 16**
+- **Self-hosted, on the Guardian VM**: the installer sets up PostgreSQL 16 with pgvector from the PostgreSQL project's repositories, reachable only from the Guardian VM and its containers. You provide nothing but the VM
 - **Database name**: `guardian_pro` (typical)
+- **Database user**: allowed to create databases (Guardian keeps a control database and one database per customer)
 - **Network access**: Private only from the Guardian VM
-- **TLS**: `sslmode=require`
-- **Extensions**: `uuid-ossp` and `pgcrypto`
-- **Backups**: 14-day retention in the Terraform modules (geo-redundant / Multi-AZ in production)
+- **TLS**: required, with the server certificate verified. For a database without a certificate from a public CA, the installer creates a private CA for it
+- **Extensions**: `vector` (pgvector 0.7 or later) and `pg_trgm`
+- **Backups**: 14-day retention in the Terraform modules (geo-redundant / Multi-AZ in production). A database on the Guardian VM gets nightly dumps on the VM's data disk: copy them off the VM with your normal backup
 - Credentials may be stored as a local secret or referenced from a cloud secret store during Zauron configuration
 
 ### LLM Endpoint Requirements
 - **Model**: **Llama 4 Scout**
 - **AWS**: Amazon Bedrock in your account, through a private VPC endpoint that the Terraform module creates. Guardian uses the VM's instance role, so there is no key.
-- **Azure and Google**: a private Llama 4 Scout endpoint in the Guardian resource group / VPC, with a key issued for your installation only, so it can be rotated or revoked on its own
-- **Network**: private only. The endpoint sits next to the Guardian VM, so report text stays in your network
+- **Azure, Google and Self-hosted**: a Llama 4 Scout endpoint that Zauron runs in Microsoft Azure for your installation only, with a key issued for your installation only, so it can be rotated or revoked on its own
+- **Network**: on AWS private only (VPC endpoint), so report text stays in your account. On the other types Guardian reaches the endpoint over outbound HTTPS (`443`) and sends it report text
 
 ### Network and Security Requirements
 
@@ -144,7 +146,7 @@ These apply to every installation type.
 | Customer PACS | Site DICOM ports (commonly `104` and `11112`); Guardian SCU source pool typically `11200`–`12000` | C-FIND / C-MOVE (`GUARDIAN_SCU`) |
 | PowerScribe | `443` (web API) or SQL Server `1433` | Report ingestion |
 | `zauron.azurecr.io` | `443` | Pull Guardian platform images and supported AI model containers |
-| LLM endpoint (private, in the Guardian VPC / resource group) | `443` | Report reading (Bedrock VPC endpoint on AWS) |
+| LLM endpoint (AWS: Bedrock VPC endpoint; other types: Zauron-run endpoint in Microsoft Azure) | `443` | Report reading |
 | Email service | `443` / `587` | Assignment emails |
 | PostgreSQL | `5432` | Application database (private) |
 
@@ -162,7 +164,7 @@ Provide before install:
 | Compute placement | Unused CIDR for a new Guardian subnet (example `10.0.100.0/24`) |
 | Database placement | Room for a second subnet in the same VNet (PostgreSQL Flexible Server private access) |
 | PACS / reporting / admin CIDRs | Allowlists for DICOM, reporting, and SSH |
-| LLM | Nothing to provide: a private Llama 4 Scout endpoint is set up in the Guardian resource group / VPC |
+| LLM | Nothing to provide: Zauron sets up a Llama 4 Scout endpoint in Microsoft Azure for your installation |
 
 The Azure Terraform module deploys the VM, private PostgreSQL, disks, and NSG into the existing VNet. A public IP is created only when admin CIDRs are set. Cloud identity uses a system-assigned managed identity.
 
@@ -196,26 +198,28 @@ Provide before install:
 | Compute placement | VM subnet with unused address space |
 | Database placement | Private Cloud SQL (PostgreSQL) reachable from the VM |
 | PACS / reporting / admin CIDRs | Firewall allowlists |
-| LLM | Nothing to provide: a private Llama 4 Scout endpoint is set up in the Guardian resource group / VPC |
+| LLM | Nothing to provide: Zauron sets up a Llama 4 Scout endpoint in Microsoft Azure for your installation |
 
 ## Self-hosted
 
 Use this type when Guardian runs in **your data center or private cloud** (not Azure, AWS, or Google as the VM host).
 
-You provision the Ubuntu VM and PostgreSQL. Zauron deploys the same container stack over SSH as `zauron`.
+You provision the Linux VM. Zauron deploys the same container stack over SSH as `zauron`. The database can run on the same VM, where the installer sets up PostgreSQL 16 with pgvector, or on a PostgreSQL server you run.
 
 Provide before install:
 
 | Item | What to give Zauron |
 |------|---------------------|
-| VM | Ubuntu host with the compute and disk sizes above |
-| Network | LAN/VLAN description and firewall rules matching the inbound/outbound tables |
+| VM | Ubuntu 22.04 / 24.04, Debian 12 or RHEL / Rocky Linux / AlmaLinux / Oracle Linux 8–9, with the compute and disk sizes above and the VM's LAN address |
+| Database | "On the Guardian VM" (nothing else to provide), or your PostgreSQL server's host name |
+| DNS | Records for the Guardian and console names pointing at the VM's address |
+| Network | LAN/VLAN description and firewall rules matching the inbound/outbound tables, plus outbound HTTPS to the operating system and PostgreSQL package repositories |
 | PACS / reporting / admin CIDRs | Allowlists for DICOM, reporting, and SSH |
-| LLM | A private Llama 4 Scout endpoint on your network, reachable from the VM (set up with Zauron) |
+| LLM | Nothing to provide: Zauron sets up a Llama 4 Scout endpoint in Microsoft Azure for your installation; allow outbound HTTPS to it |
 
 ## Network Diagram
 
-Everything Guardian needs runs inside your network. The Guardian VPC or resource group in your cloud holds the Guardian VM, the PostgreSQL database and a private LLM endpoint (Amazon Bedrock behind a VPC endpoint on AWS), so studies, reports and report text stay with you. The only service outside your network is Zauron's container registry: Guardian pulls application and model updates from it over outbound HTTPS.
+Guardian runs inside your network. The Guardian VM and the PostgreSQL database sit in your cloud (or, Self-hosted, in your data center), so studies and reports stay with you. Two services sit outside it: Zauron's container registry, from which Guardian pulls application and model updates over outbound HTTPS, and, except on AWS, the LLM endpoint that Zauron runs for your installation, which receives report text over HTTPS. On AWS the LLM is Amazon Bedrock in your own account behind a VPC endpoint.
 
 ```mermaid
 flowchart TB
@@ -236,22 +240,24 @@ flowchart TB
                 MODELS["AI model containers"]
             end
             DB[("PostgreSQL<br/>private")]
-            LLM["LLM endpoint, private<br/>Llama 4 Scout"]
+            LLM["AWS: Amazon Bedrock<br/>Llama 4 Scout, VPC endpoint"]
         end
     end
-    REG["Zauron container registry<br/>the only service outside your network"]
+    REG["Zauron container registry"]
+    ZLLM["Zauron LLM endpoint<br/>Llama 4 Scout, Microsoft Azure<br/>Azure · Google · Self-hosted"]
 
     USERS -->|"HTTPS 443"| WEB
     PACS <-->|"DICOM"| APP
     RPT -->|"PowerScribe · SQL · HL7"| APP
     APP -->|"study images"| MODELS
     APP -->|"5432 · TLS"| DB
-    APP -->|"report text"| LLM
+    APP -->|"report text (AWS)"| LLM
+    APP -->|"report text · HTTPS 443"| ZLLM
     REG -->|"image pulls · HTTPS 443, outbound from Guardian"| APP
 
     style TOP fill:none,stroke:none
     classDef ext fill:#f1f5f9,stroke:#64748b,stroke-dasharray: 4 3
-    class REG ext
+    class REG,ZLLM ext
 ```
 
 Users reach Guardian in two ways:
