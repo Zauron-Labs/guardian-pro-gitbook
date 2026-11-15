@@ -3,7 +3,7 @@
 The Guardian API is for integrating your applications with Guardian Pro:
 
 - **REST API (headless Guardian).** Your viewer, worklist or reporting system reads exams and AI findings and completes peer reviews through Guardian's `/v1` API, without Guardian's screens.
-- **Task feed (HL7).** Guardian sends each new peer review, peer learning and interesting case task to your worklist as an HL7 order, and opening the task there opens the case in Guardian.
+- **Task feed (HL7).** Guardian sends each new peer review, self review, champion review, interesting case and great call task to your worklist as an HL7 order, and opening the task there opens the case in Guardian.
 - **PACS Flag Case button.** A browser link that a button in your PACS or reporting software opens, so a radiologist can flag a case for peer review.
 
 To integrate an AI model, so that it runs inside Guardian, see the [Model API](model-api.md) instead.
@@ -123,31 +123,49 @@ Responses are JSON and are sent with `Cache-Control: no-store`.
 
 ## Task feed (HL7 tasks to your worklist)
 
-Guardian can create its review tasks directly in your worklist (for example Agfa Enterprise Imaging), so reviewers start from the worklist they already use. Guardian keeps choosing and assigning the cases; the review itself is done in Guardian.
+Guardian can create its review tasks directly in your worklist (for example Agfa Enterprise Imaging), so reviewers start from the worklist they already use. Guardian keeps choosing and assigning the cases; the reviewer opens each case from its task in Guardian's viewer.
 
 **What is sent**
 
 | Task | Sent to |
 |------|---------|
 | Peer review | The reviewer Guardian assigned |
-| Peer learning | The original reader, for their own case where Guardian's AI and their report disagree |
+| Self review | The original reader, for their own case where Guardian's AI and their report disagree |
+| Champion review | The champion asked to give the final decision on a disputed or escalated review |
 | Interesting case | The reviewer the case was sent to |
+| Great call | The original reader, as recognition of a good catch on their own case |
 
-Each task is one HL7 v2.5.1 **OMI^O23** order over MLLP, inside your site-to-site VPN:
+Zauron switches each task type on for your site. While a type is sent to your worklist, Guardian sends no email of its own for it.
 
-- **New task** (`NW`): patient ID, accession number and Study Instance UID of the original study, the assignee, a neutral comment and a link that opens the task in Guardian.
-- **Completed** (`SC`, order status `CM`) when the work is done in Guardian, and **withdrawn** (`CA`) when the task is deferred, reassigned or expires.
-- No report text, review results or names other than the assignee's are sent.
+Each task is one HL7 v2.5.1 **OMI^O23** new order (`NW`) over MLLP. It carries:
 
-Your worklist acknowledges each message. Messages for one task always arrive in order; an unacknowledged message is retried after 1, 5, 15 and 60 minutes, then shown to your Guardian administrators, who can send it again.
+- the accession number and Study Instance UID of the original study (no patient ID, name or other demographics: there is no PID segment);
+- the assignee, in ORC-12 and OBR-32, with the identifier type (NPI, worklist user ID or email) your site chose;
+- a one-line comment: the task type, then the AI finding or interesting-case snippet when there is one;
+- a link that opens the case in Guardian.
+
+No report text, review results or names other than the assignee's are sent. A task whose assignee has no identifier of your site's type is not sent; your administrators see who is missing one under **Admin → Settings → Task feed**.
+
+**Where the tasks go.** Guardian sends them to your worklist's task listener: the HL7 receiver your worklist runs for Guardian's tasks. It is separate from the Guardian listener that receives your reports. With an on-premises install, Guardian reaches the task listener on your network; with Guardian SaaS, over your site-to-site VPN.
+
+**Passive or active.** Zauron sets the task orchestration for your site:
+
+- **Passive** (the default). Every task opens in Guardian's viewer read-only, and the reviewer records the review in your worklist. Guardian sends only the new order: no status or cancel messages, and nothing comes back to Guardian. Opening a task completes nothing in Guardian; Guardian lists the case as in your worklist until it closes the item itself or the item ages out of the review window.
+- **Active.** Each task type is completed either in your worklist (as in passive) or in Guardian. A type completed in Guardian opens with Guardian's review options for the assignee: your worklist shows the task only to them, so Guardian takes whoever opens it to be the assignee, with no Guardian sign-in, and logs that the identity came from your worklist. Guardian records the review, and sends a status change (`SC`, order status `CM`) when it is completed and a cancel (`CA`) when the task is withdrawn, so your worklist can close it. Both use the task's reference from the new order.
+
+A change of orchestration applies only to tasks sent after it.
+
+Your worklist acknowledges each message. An unacknowledged message is retried after 1, 5, 15 and 60 minutes, then shown to your Guardian administrators, who can send it again. While messages are not getting through, Guardian's system alert notifies your site's alert recipients.
 
 **Turning it on**
 
-The task feed is **off by default**. Zauron turns it on for your site and sets the destination with you. Only tasks created after it is turned on are sent. Turning it off sends nothing more, and tasks already in your worklist stay there. Your administrators can pause sending (for example during worklist maintenance) under **Admin → Settings → Task feed**.
+The task feed is **off by default**. Zauron turns it on for your site and sets the task listener's address with you. Only tasks created after it is turned on are sent. Turning it off sends nothing more, and tasks already in your worklist stay there. Your administrators can pause sending (for example during worklist maintenance) under **Admin → Settings → Task feed**.
 
 **Opening a task**
 
-The link in each task is `https://<your Guardian address>/launch/<reference>`. On its own it grants nothing. When a user opens it, your worklist adds who is signed in, signed with a key Zauron gives you (HMAC-SHA256, valid for 2 minutes, usable once). Guardian matches that user to a Guardian user (work email, then NPI, then the **Worklist user ID** an administrator can set on the user) and opens the case only for the task's assignee. Without a valid signature, the user signs in to Guardian first.
+The link in each task is `https://<your Guardian address>/launch/<reference>/<expiry>/<signature>`. Guardian signs it when it sends the task (HMAC-SHA256, with a key that never leaves Guardian), so your worklist only needs to open it unchanged. It opens that one case in Guardian's viewer (read-only, unless the task type is completed in Guardian) with no Guardian sign-in, and can be reopened until it expires (30 days by default, set with you, and never after the study's images are removed).
+
+The link names no user: anyone holding it can open that case until it expires. Your worklist must show each task only to its assignee, and Guardian only accepts opens from your site's network when you have set web access ranges. Every open is logged with the task, time and source address. Your administrators can revoke a task's link under **Admin → Settings → Task feed**; a task withdrawn in Guardian before it was opened, or whose link was revoked, shows a "task closed" page.
 
 The detailed message specification is shared with your integration team during setup.
 
