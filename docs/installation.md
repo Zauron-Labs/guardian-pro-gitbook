@@ -274,11 +274,11 @@ These steps apply after you have selected Azure, AWS, Google, or Self-hosted.
 #### 1. Provision the virtual machine
 
 **VM specifications:**
-- Ubuntu 22.04 LTS preferred (20.04 LTS or later accepted)
+- Ubuntu 22.04 LTS preferred (20.04 LTS or later accepted). Self-hosted also: Debian 12, RHEL / Rocky Linux / AlmaLinux / Oracle Linux 8–9
 - 4 vCPU / 16 GB RAM minimum; 12 vCPU / 32 GB RAM recommended for production
 - 64 GB OS disk plus a dedicated data disk (512 GB typical) mounted at `/opt/guardian-data`
-- SSH key access for user **`zauron`** with sudo
-- Docker and Docker Compose v2 installed
+- SSH key access for user **`zauron`** with sudo (the `sudo` group on Ubuntu and Debian, `wheel` on RHEL-family systems)
+- No need to install Docker or PostgreSQL yourself: Zauron's installer adds Docker and Docker Compose v2, and, for a Self-hosted database on the Guardian VM, PostgreSQL 16 with pgvector
 - Azure and AWS: use the Guardian Terraform module so the VM joins the existing VNet/VPC
 
 ```bash
@@ -301,19 +301,21 @@ aws ec2 run-instances \
   '
 ```
 
-Create host data directories (Zauron will bind-mount these into the containers):
+Mount the data disk at `/opt/guardian-data`. The installer creates the folders it needs there.
 
-```bash
-sudo mkdir -p /opt/guardian-data/{cache,dicomweb,precache,logs}
-sudo chown -R zauron:zauron /opt/guardian-data
-```
+**Self-hosted: run the site preflight.** Zauron sends you a preflight script (it contains no passwords or keys). Run it on the Guardian VM with `sudo`. It asks for the site details Zauron needs (the two host names, first administrators, PACS, reporting, mail relay, network ranges and, if used, your worklist's task listener) and checks the VM: operating system, CPU and memory, the data disk, the host firewall (it offers to open Guardian's ports), DNS for both names, outbound HTTPS to Zauron's registry and the package repositories, and reachability of your PACS, mail relay and task listener. It writes two files, `answers.yaml` and `report.txt`: send both to your Zauron representative and fix anything marked **FAIL**. You can re-run it at any time with your earlier answers (`--answers answers.yaml`).
 
 #### 2. Configure database access
 
+Self-hosted with the database on the Guardian VM: nothing to do here; the installer sets it up.
+
+Otherwise:
+
 1. Ensure PostgreSQL 13+ is running (cloud Terraform provisions 16) and reachable **privately** from the VM
-2. Create a database user with read/write permissions on `guardian_pro`
-3. Enable SSL and the `uuid-ossp` and `pgcrypto` extensions
-4. Record the host, port and database name on the installation checklist, and give Zauron the credentials over a secure channel
+2. Make the `vector` (pgvector 0.7 or later) and `pg_trgm` extensions available
+3. Create a database user that owns `guardian_pro` and may create databases (Guardian keeps a control database and one database per customer)
+4. Require TLS. If the server's certificate isn't from a public certificate authority, Zauron's installer creates a private CA and server certificate for it
+5. Record the host, port and database name on the installation checklist, and give Zauron the credentials over a secure channel
 
 Zauron initializes schema and runs migrations on first deploy.
 
@@ -348,9 +350,11 @@ Allow the Guardian VM IP on the reporting host. Give your Zauron representative 
 
 #### 5. Allow outbound access to Zauron's container registry
 
-The VM must pull images from Zauron's container registry (`zauron.azurecr.io`): the Guardian application and the AI models you license. Zauron issues registry credentials for your installation only.
+The VM must pull images from Zauron's container registry (`zauron.azurecr.io`): the Guardian application and the AI models you license. The registry serves image layers from Microsoft-managed storage, so also allow outbound HTTPS to `*.blob.core.windows.net`. Zauron issues registry credentials for your installation only.
 
-The VM must also reach the private LLM endpoint in the Guardian VPC / resource group over HTTPS.
+The VM must also reach the LLM endpoint over HTTPS: on AWS, the Bedrock VPC endpoint in your account; on Azure, Google and Self-hosted, the endpoint Zauron runs for your installation (Zauron gives you its host name).
+
+Self-hosted: the installer also needs outbound HTTPS to Docker's package repository (`download.docker.com`), your operating system's package mirrors and, for a database on the Guardian VM, the PostgreSQL project's repository (`apt.postgresql.org` or `download.postgresql.org`).
 
 #### 6. Zauron deploys the Guardian Pro container stack
 
@@ -385,12 +389,12 @@ Guardian has no shared passwords. Your first administrators sign in with a one-t
 
 ### Image Pull Failures
 - **Symptom**: Model or platform containers fail to start
-- **Solution**: Confirm outbound HTTPS to `zauron.azurecr.io` and that Zauron registry credentials are valid
+- **Solution**: Confirm outbound HTTPS to `zauron.azurecr.io` and `*.blob.core.windows.net`, and that Zauron registry credentials are valid
 - **Debug**: From the VM, test `docker login zauron.azurecr.io`
 
 ### LLM Endpoint Problems
 - **Symptom**: Report structuring does not run, or LLM worker errors in logs
-- **Solution**: Confirm the VM reaches the private LLM endpoint over HTTPS (on AWS, the Bedrock VPC endpoint and the VM's instance role)
+- **Solution**: Confirm the VM reaches the LLM endpoint over HTTPS (on AWS, the Bedrock VPC endpoint and the VM's instance role; on the other types, the endpoint Zauron gave you)
 - **Debug**: From the VM, test HTTPS to the LLM endpoint
 
 ### Email Delivery Problems
