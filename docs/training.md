@@ -37,9 +37,10 @@ Our structured 3-week onboarding process ensures you get up and running quickly 
 
 ### Week 1: Quality Champion Setup
 - **Focus**: Critical miss handling and quality assurance workflows
-- **Process**: When a critical miss occurs, the designated Quality Champion receives an email notification containing:
-  - Accession number for the study
-  - Direct live link to access the study
+- **Process**: When a critical miss occurs, the designated Quality Champion receives an email notification and the case is pinned at the top of their Peer Review worklist:
+  - Direct live link to access the study (the viewer shows the accession number)
+  - By default the champion scores the case before the report author's name is shown
+  - Optionally, the report author is emailed the champion's final decision
 - **Actions**: Utilize existing institutional policies and procedures, which may include:
   - Direct patient contact
   - Consultation with the original radiologist
