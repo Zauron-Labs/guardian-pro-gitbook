@@ -12,11 +12,22 @@ Guardian Pro is delivered as container images from Zauron's container registry, 
 
 ## Get the public key
 
-The public key (`cosign.pub`) is available from Zauron on request, and will also be published on this page. Before you rely on it, compare its fingerprint with the one Zauron gives you through a second channel (for example your Zauron contact, or the security exhibit of your agreement):
+The public key (`cosign.pub`) is below; save it as `cosign.pub`. Before you rely on it, compare its fingerprint with the one Zauron gives you through a second channel (for example your Zauron contact, or the security exhibit of your agreement):
 
 ```bash
 openssl pkey -pubin -in cosign.pub -outform DER | sha256sum
 ```
+
+Releases from 6.32.0 on are signed with this key (ECDSA P-256):
+
+```
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEP9J+D7Q1EQ4nCm7qpO/SUdHKBAId
+b+IYYi0+qfl6Rgjn9YWlmOJMkvjd+aDQzOdSVD117eusctsjhZGA8QccMw==
+-----END PUBLIC KEY-----
+```
+
+Fingerprint: `9571e93aef8b91c1f5fbe306c448347a1b38e8d8eee75ec3f86b0f20da96e0e1`
 
 ## Verify an image
 
