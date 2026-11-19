@@ -27,6 +27,7 @@ For the customer's **interface team** (interface engine / RIS / reporting-system
 - Your interface engine connects to the Guardian HL7 address and port Zauron gives you, through the tunnel.
 - Plain MLLP inside the tunnel (the tunnel already encrypts the traffic). No TLS is needed.
 - Only your agreed address range may connect. A connection from any other address is closed without an ACK.
+- On a dedicated installation, Guardian can also accept MLLP over TLS 1.2 or newer, optionally requiring a client certificate from your interface engine (mutual TLS). See [Encryption in transit](../security/encryption-in-transit.md#hl7-mllp-over-tls).
 
 ### 2.2 Connection behaviour
 

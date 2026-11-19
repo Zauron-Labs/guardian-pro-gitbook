@@ -8,7 +8,7 @@ A subprocessor is a third party that Zauron Labs uses to store or process custom
 
 **Where processing happens.** AWS and Microsoft process customer data only in the United States. The two optional subprocessors below are the only exceptions: Datadog processes logs in the Datadog region your organization chooses, and an AI model vendor processes images where its license for that model states.
 
-*Last updated: November 15, 2026*
+*Last updated: November 19, 2026*
 
 ## Guardian Pro Cloud
 
@@ -61,6 +61,8 @@ The AI language model that reads report text depends on the installation type:
 
 If Zauron hosts a dedicated installation for you, its subprocessors are listed in your agreement.
 
+Every connection a dedicated installation makes outside your network, and how to turn each off, is listed on [Outbound connections](security/outbound-connections.md).
+
 ## Vendors without access to customer data
 
 | Vendor | Purpose |
@@ -68,7 +70,8 @@ If Zauron hosts a dedicated installation for you, its subprocessors are listed i
 | Microsoft Azure (container registry) | Distributing Guardian Pro software images |
 | GitHub, Inc. | Source code hosting |
 | Let's Encrypt (ISRG) | TLS certificates |
-| jsDelivr, Google Fonts | Static files (a text-editor library and fonts) that your browser downloads |
+
+The Guardian dashboard loads no scripts or fonts from third-party sites: your browser downloads everything from your Guardian site.
 
 ## Changes to this list
 

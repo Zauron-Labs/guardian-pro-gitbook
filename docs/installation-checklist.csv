@@ -8,12 +8,12 @@ PACS CIDRs,[PACS subnet CIDRs],104 / 11112 / [site],No,Used for firewall rules
 Reporting CIDRs,[PowerScribe / interface engine CIDRs],443 / 1433 / 2575,No,PowerScribe web API or SQL Server; HL7 feed into Guardian
 Admin CIDRs,[office / jump-host CIDRs],22,No,SSH allowlist
 Web access CIDRs,[user network CIDRs],443,No,Who may open Guardian in a browser
-PostgreSQL database,"[private DB host, or the Guardian VM]",5432,No,Version 13+ with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely
+PostgreSQL database,"[private DB host, or the Guardian VM]",5432,No,Version 14+ (16 recommended) with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely
 Guardian DICOM SCP,[VM IP],4000,No,AE title GUARDIAN_SCP
 Guardian web address and console address,[guardian.yourdomain] and [console.guardian.yourdomain],443,No,"DNS records to the VM; certificate covering both, or Let's Encrypt"
 PACS (remote SCP),[PACS host],[PACS port],No,Remote AE title (site-specific)
 Reporting system,[PowerScribe host or interface engine],443 / 1433 / 2575,No,Service account password exchanged securely
 First administrators,[names and work emails],N/A,No,At least one
-Sign-in method,[SSO issuer / LDAP server / email links],N/A,No,Secrets exchanged securely
+Sign-in method,[SSO issuer or email links; LDAP server for directory sync],N/A,No,Secrets exchanged securely
 Outbound: Zauron container registry,zauron.azurecr.io,443,No,Registry credentials issued by Zauron for this installation
 Outbound: LLM endpoint,"[Bedrock VPC endpoint in your account on AWS; Zauron-run endpoint for your installation on Azure, Google and Self-hosted]",443,No,Llama 4 Scout; allow outbound HTTPS to it

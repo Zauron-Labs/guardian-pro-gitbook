@@ -21,6 +21,13 @@ This documentation provides comprehensive guidance for Guardian Pro, an AI-enric
 - [AI Models](docs/models.md)
 - [Compliance & Accreditation](docs/compliance.md)
 - [Security](docs/security.md)
+  - [Encryption in Transit](docs/security/encryption-in-transit.md)
+  - [Audit Log](docs/security/audit-log.md)
+  - [Data Retention](docs/security/data-retention.md)
+  - [Container Security](docs/security/container-security.md)
+  - [Verifying Images](docs/security/image-verification.md)
+  - [Secrets in Your Cloud Secret Store](docs/security/secrets.md)
+  - [Outbound Connections](docs/security/outbound-connections.md)
 - [Subprocessors](docs/subprocessors.md)
 
 ## DataForge
