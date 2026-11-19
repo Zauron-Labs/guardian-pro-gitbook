@@ -31,7 +31,7 @@ Before installing Guardian Pro, ensure you have:
 - **LLM**: **Llama 4 Scout**, used to read reports. On AWS it is Amazon Bedrock in your account behind a VPC endpoint, so report text stays in your account. On Azure, Google and Self-hosted it is an endpoint that Zauron runs in Microsoft Azure for your installation only; Guardian sends report text to it over HTTPS
 - **First administrators**: name and work email of at least one person who will administer Guardian
 - **DNS and TLS**: two host names in your domain, one for Guardian and one for Zauron's operator console, with DNS records and a certificate covering both (or Let's Encrypt)
-- **PostgreSQL database**: PostgreSQL 13 or later with pgvector 0.7 or later. Cloud Terraform provisions PostgreSQL 16 with private access; Self-hosted can run it on the Guardian VM (the installer sets up PostgreSQL 16) or use your own server
+- **PostgreSQL database**: PostgreSQL 14 or later (16 recommended) with pgvector 0.7 or later. PostgreSQL 13 and older are past their community end of life. Cloud Terraform provisions PostgreSQL 16 with private access; Self-hosted can run it on the Guardian VM (the installer sets up PostgreSQL 16) or use your own server
 - **Technical support**: IT administrator familiar with networking, DICOM, and database administration
 
 ## Installation Checklist
@@ -55,13 +55,13 @@ Alternatively, copy the table below into your preferred spreadsheet application.
 | Reporting CIDRs | [PowerScribe / interface engine CIDRs] | 443 / 1433 / 2575 | No | PowerScribe web API or SQL Server; HL7 feed into Guardian |
 | Admin CIDRs | [office / jump-host CIDRs] | 22 | No | SSH allowlist |
 | Web access CIDRs | [user network CIDRs] | 443 | No | Who may open Guardian in a browser |
-| PostgreSQL database | [private DB host, or the Guardian VM] | 5432 | No | Version 13+ with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely |
+| PostgreSQL database | [private DB host, or the Guardian VM] | 5432 | No | Version 14+ (16 recommended) with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely |
 | Guardian DICOM SCP | [VM IP] | 4000 | No | AE title GUARDIAN_SCP |
 | Guardian web address and console address | [guardian.yourdomain] and [console.guardian.yourdomain] | 443 | No | DNS records to the VM; certificate covering both, or Let's Encrypt |
 | PACS (remote SCP) | [PACS host] | [PACS port] | No | Remote AE title (site-specific) |
 | Reporting system | [PowerScribe host or interface engine] | 443 / 1433 / 2575 | No | Service account password exchanged securely |
 | First administrators | [names and work emails] | N/A | No | At least one |
-| Sign-in method | [SSO issuer / LDAP server / email links] | N/A | No | Secrets exchanged securely |
+| Sign-in method | [SSO issuer or email links; LDAP server for directory sync] | N/A | No | Secrets exchanged securely |
 | Outbound: Zauron container registry | zauron.azurecr.io | 443 | No | Registry credentials issued by Zauron for this installation |
 | LLM endpoint | [AWS: Bedrock VPC endpoint in your account; Azure, Google, Self-hosted: Zauron-run endpoint for your installation] | 443 | No | Llama 4 Scout; allow outbound HTTPS to it |
 
@@ -80,13 +80,13 @@ PACS CIDRs,[PACS subnet CIDRs],104 / 11112 / [site],No,Used for firewall rules
 Reporting CIDRs,[PowerScribe / interface engine CIDRs],443 / 1433 / 2575,No,PowerScribe web API or SQL Server; HL7 feed into Guardian
 Admin CIDRs,[office / jump-host CIDRs],22,No,SSH allowlist
 Web access CIDRs,[user network CIDRs],443,No,Who may open Guardian in a browser
-PostgreSQL database,"[private DB host, or the Guardian VM]",5432,No,Version 13+ with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely
+PostgreSQL database,"[private DB host, or the Guardian VM]",5432,No,Version 14+ (16 recommended) with pgvector 0.7+ (Terraform and the Self-hosted installer use 16); database guardian_pro; TLS with certificate verification; credentials exchanged securely
 Guardian DICOM SCP,[VM IP],4000,No,AE title GUARDIAN_SCP
 Guardian web address and console address,[guardian.yourdomain] and [console.guardian.yourdomain],443,No,"DNS records to the VM; certificate covering both, or Let's Encrypt"
 PACS (remote SCP),[PACS host],[PACS port],No,Remote AE title (site-specific)
 Reporting system,[PowerScribe host or interface engine],443 / 1433 / 2575,No,Service account password exchanged securely
 First administrators,[names and work emails],N/A,No,At least one
-Sign-in method,[SSO issuer / LDAP server / email links],N/A,No,Secrets exchanged securely
+Sign-in method,[SSO issuer or email links; LDAP server for directory sync],N/A,No,Secrets exchanged securely
 Outbound: Zauron container registry,zauron.azurecr.io,443,No,Registry credentials issued by Zauron for this installation
 LLM endpoint,"[AWS: Bedrock VPC endpoint in your account; Azure, Google, Self-hosted: Zauron-run endpoint for your installation]",443,No,Llama 4 Scout; allow outbound HTTPS to it
 ```
@@ -111,7 +111,7 @@ These apply to every installation type.
 - **Runtime**: Docker 20.10 or later and Docker Compose v2 (the installer adds them)
 
 ### Database Requirements
-- **PostgreSQL**: Version 13 or later. Cloud Terraform modules provision **PostgreSQL 16**
+- **PostgreSQL**: Version 14 or later, 16 recommended. Cloud Terraform modules provision **PostgreSQL 16**
 - **Self-hosted, on the Guardian VM**: the installer sets up PostgreSQL 16 with pgvector from the PostgreSQL project's repositories, reachable only from the Guardian VM and its containers. You provide nothing but the VM
 - **Database name**: `guardian_pro` (typical)
 - **Database user**: allowed to create databases (Guardian keeps a control database and one database per customer)
@@ -119,7 +119,7 @@ These apply to every installation type.
 - **TLS**: required, with the server certificate verified. For a database without a certificate from a public CA, the installer creates a private CA for it
 - **Extensions**: `vector` (pgvector 0.7 or later) and `pg_trgm`
 - **Backups**: 14-day retention in the Terraform modules (geo-redundant / Multi-AZ in production). A database on the Guardian VM gets nightly dumps on the VM's data disk: copy them off the VM with your normal backup
-- Credentials may be stored as a local secret or referenced from a cloud secret store during Zauron configuration
+- Credentials may be stored as a local secret or referenced from your cloud secret store (see [Secrets in your cloud secret store](security/secrets.md))
 
 ### LLM Endpoint Requirements
 - **Model**: **Llama 4 Scout**
@@ -136,8 +136,9 @@ These apply to every installation type.
 | `22` | SSH (`zauron`) | Admin CIDRs |
 | `80` / `443` | Traefik reverse proxy (dashboard, OHIF viewer, DICOMweb) | Users on the virtual network |
 | `4000` | Guardian DICOM SCP (`GUARDIAN_SCP`) for inbound C-STORE | PACS CIDRs |
+| One extra port, commonly `2762` (optional) | DICOM TLS for inbound C-STORE, when you want TLS alongside the plain port ([Encryption in transit](security/encryption-in-transit.md)) | PACS CIDRs |
 | `8090` | Status dashboard on the host (also published at `/` on 443) | Virtual network |
-| `2575` | HL7 v2 report feed (MLLP), when used | Interface engine |
+| `2575` | HL7 v2 report feed (MLLP, or MLLP over TLS), when used | Interface engine |
 
 **Outbound (from the Guardian VM):**
 
@@ -311,7 +312,7 @@ Self-hosted with the database on the Guardian VM: nothing to do here; the instal
 
 Otherwise:
 
-1. Ensure PostgreSQL 13+ is running (cloud Terraform provisions 16) and reachable **privately** from the VM
+1. Ensure PostgreSQL 14 or later is running (16 recommended; cloud Terraform provisions 16) and reachable **privately** from the VM
 2. Make the `vector` (pgvector 0.7 or later) and `pg_trgm` extensions available
 3. Create a database user that owns `guardian_pro` and may create databases (Guardian keeps a control database and one database per customer)
 4. Require TLS. If the server's certificate isn't from a public certificate authority, Zauron's installer creates a private CA and server certificate for it
@@ -369,7 +370,7 @@ You do not install Guardian Pro from a public download. First-time database init
 
 #### 7. Sign-in and users
 
-Guardian has no shared passwords. Your first administrators sign in with a one-time link sent to their work email, or through single sign-on (OIDC) or LDAP once your directory is connected. They add everyone else in the dashboard **Admin** tab. With a directory, users and roles can come from your directory groups. See [Sign-in and users](cloud-onboarding.md#sign-in-and-users); the options are the same for dedicated installations.
+Guardian has no shared passwords. Your first administrators sign in with a one-time link sent to their work email, or through single sign-on (OIDC) once your identity provider is connected. They add everyone else in the dashboard **Admin** tab, or users and roles come from your identity provider at sign-in, or from your LDAP / Active Directory groups. See [Sign-in and users](cloud-onboarding.md#sign-in-and-users); the options are the same for dedicated installations.
 
 ### Post-Installation Verification
 
@@ -407,13 +408,16 @@ Guardian has no shared passwords. Your first administrators sign in with a one-t
 ### Data Protection
 - DICOM private tags are removed from the copies Guardian keeps, using keys unique to your installation
 - Peer-review links are time-limited
-- Dashboard and viewer traffic uses TLS
+- Dashboard and viewer traffic uses TLS. DICOM and HL7 can use TLS too, with optional mutual TLS: see [Encryption in transit](security/encryption-in-transit.md)
+- Secrets can stay in your own cloud secret store: see [Secrets in your cloud secret store](security/secrets.md)
+- Every connection the installation makes outside your network is listed on [Outbound connections](security/outbound-connections.md)
+- Release images are signed and pinned by digest, and containers run as non-root with all capabilities dropped: see [Verifying images](security/image-verification.md) and [Container security](security/container-security.md)
 
 ### Network Security
 - Open only the inbound ports listed above
 - Treat the VM as a trust boundary: it holds Docker access for model containers and connections to PACS and reporting
-- Every user signs in as themselves (email sign-in link, SSO or LDAP). There is no shared administrator password. Radiologists open assigned cases from time-limited email links.
-- **Flag Case button from your PACS.** Because this installation runs in your own cloud account or data center, the button can open a case without a Guardian sign-in, from your registered network ranges only (see the [Flag Case deep link](api_reference.md#flag-case-deep-link)). Tell Zauron on the intake form whether your organization runs the installation; an installation Zauron hosts for you always requires sign-in. You can ask Zauron to require sign-in for the button at any time.
+- Every user signs in as themselves (single sign-on or an email sign-in link). There is no shared administrator password. Radiologists open assigned cases from time-limited email links.
+- **Flag Case button from your PACS.** Because this installation runs in your own cloud account or data center, the button can open a case without a Guardian sign-in, from your registered network ranges only (see the [Flag Case deep link](guardian-api.md#flag-case-deep-link)). Tell Zauron on the intake form whether your organization runs the installation; an installation Zauron hosts for you always requires sign-in. You can ask Zauron to require sign-in for the button at any time.
 
 ## Support and Maintenance
 

@@ -25,5 +25,5 @@ How each Guardian Pro feature can be used: in the standard Guardian app, inside 
 | Site overview and worklist | Site analytics, live tasks, worklist status | 🟢 Yes | 🟢 Yes | 🔴 No |
 | Notifications | Assignment, great call, champion and self-review emails | 🟢 Yes | 🟢 Yes | 🟡 Partial |
 | Administration | Users, roles, sites, policies, settings | 🟢 Yes | 🟢 Yes | 🔴 No |
-| Sign-in | SSO (OIDC), LDAP, emailed sign-in link | 🟢 Yes | 🟢 Yes | 🟢 Yes |
+| Sign-in | SSO (OIDC) or emailed sign-in link; users and roles from LDAP / Active Directory | 🟢 Yes | 🟢 Yes | 🟢 Yes |
 | DataForge | Labeling, model validation, structured assessment | 🟢 Yes | 🟢 Yes | 🔴 No |

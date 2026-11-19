@@ -116,9 +116,14 @@ Also send a **radiologist roster**: name, work email, reporting-system ID, NPI a
 
 Guardian has no shared passwords. Every person signs in as themselves, with one of:
 
-- **Single sign-on (OIDC)**, recommended: Microsoft Entra ID, Okta, Ping or another OpenID Connect provider. You register Guardian as an application and give Zauron the issuer, client ID and client secret.
-- **LDAP / Active Directory**, over the VPN only: LDAPS or STARTTLS, a bind account, the search base and your directory's CA certificate.
-- **Email sign-in links**: no directory. Administrators add users in Guardian, and users sign in with a one-time link sent to their work email.
+- **Single sign-on (OIDC)**, recommended: Microsoft Entra ID, Okta, Ping or another OpenID Connect provider. You register Guardian as an application and give Zauron the issuer, client ID and client secret. Users of an organization with single sign-on sign in only through it.
+- **Email sign-in links**: users sign in with a one-time link sent to their work email.
+
+Users come from one of:
+
+- **Your identity provider**, at single sign-on.
+- **LDAP / Active Directory directory sync**, over the VPN only: LDAPS or STARTTLS, a bind account, the search base and your directory's CA certificate. Guardian reads names, email addresses and roles from the directory; it does not check directory passwords. Directory users sign in with an email sign-in link, or with single sign-on if you also connect your identity provider.
+- **Guardian itself**: administrators add users in the **Admin** tab.
 
 With SSO or LDAP, roles can follow your directory groups, or your administrators can set them in Guardian. The roles are **Admin**, **Champion**, **Radiologist** and **Trainee** (see [Training & Onboarding](training.md)). Your first administrators are named at intake. They add everyone else.
 
@@ -135,12 +140,14 @@ Radiologists receive their review assignments by email. Ask Zauron for the sendi
 | Area | How Guardian Pro Cloud protects it |
 |------|-------------------------------|
 | Separation between customers | A separate database, storage area and web address for each customer. Sign-in is bound to your own site. |
-| Data in transit | HTTPS with TLS 1.2 or newer for users. IPsec VPN for your systems. TLS to the database. |
+| Data in transit | HTTPS with TLS 1.2 or newer for users. IPsec VPN for your systems. TLS to the database, with the certificate verified. See [Encryption in transit](security/encryption-in-transit.md). |
 | Data at rest | Encrypted databases, disks and storage. Connection secrets, such as your PowerScribe password, are stored encrypted. |
 | Images | DICOM private tags are removed from the copies Guardian keeps. Study identifiers and accession numbers are kept so your team can find the study in your PACS. |
 | Logs | Patient medical record numbers are never written to logs. |
+| Sessions | Administrators are signed out after 30 minutes without input, and administration can be limited to your own network ranges. See [Access control](security.md#access-control). |
+| Retention | Report text, review records and activity logs can be deleted on a schedule you choose. See [Data retention](security/data-retention.md). |
 | Report text | Read by an AI language model hosted in AWS in the United States, reached over a private network connection rather than the public internet. |
-| Audit | Sign-ins, study views, exports, reviews and administrative changes are recorded in your site's audit log. When Zauron support staff need to act in your site, access is time-limited and recorded in your audit log. |
+| Audit | Sign-ins, study views, patient-data reads and exports, every administrative change and every refused request are recorded in your site's append-only audit log, with the outcome of each. Administrators can export it for your SIEM. When Zauron support staff need to act in your site, access is time-limited and recorded in your audit log. See [Audit log](security/audit-log.md). |
 
 For security documentation, contact [service@zauronlabs.com](mailto:service@zauronlabs.com).
 
