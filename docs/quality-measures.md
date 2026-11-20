@@ -8,12 +8,14 @@ Guardian supports the CMS MIPS quality measures below for diagnostic radiology. 
 
 Each site starts with these measures turned off. A site admin or Quality Champion turns on the ones the site reports.
 
-| Measure | Title | The report should document |
-| --- | --- | --- |
-| 360 | Count of potential high-dose radiation imaging studies: CT and cardiac nuclear medicine | A count of the patient's known CT and cardiac nuclear medicine studies in the 12 months before this study |
-| 364 | Follow-up CT imaging for incidentally detected pulmonary nodules according to recommended guidelines | For an incidental lung nodule (patients 35 or older), a follow-up interval and modality, or no follow-up, with the named guideline source |
-| 405 | Appropriate follow-up imaging for incidental abdominal lesions | For a simple-appearing renal cyst or a benign adrenal lesion (patients 18 or older), an explicit statement that no follow-up imaging is recommended |
-| 406 | Appropriate follow-up imaging for incidental thyroid nodules (inverse) | For an incidental thyroid nodule under 1.0 cm on chest or neck CT or MRI (patients 18 or older), no follow-up imaging recommended |
+| Measure | Title | 2027 core measure | The report should document |
+| --- | --- | --- | --- |
+| 360 | Count of potential high-dose radiation imaging studies: CT and cardiac nuclear medicine | Yes | A count of the patient's known CT and cardiac nuclear medicine studies in the 12 months before this study |
+| 364 | Follow-up CT imaging for incidentally detected pulmonary nodules according to recommended guidelines | No | For an incidental lung nodule (patients 35 or older), a follow-up interval and modality, or no follow-up, with the named guideline source |
+| 405 | Appropriate follow-up imaging for incidental abdominal lesions | Yes | For a simple-appearing renal cyst or a benign adrenal lesion (patients 18 or older), an explicit statement that no follow-up imaging is recommended |
+| 406 | Appropriate follow-up imaging for incidental thyroid nodules (inverse) | No | For an incidental thyroid nodule under 1.0 cm on chest or neck CT or MRI (patients 18 or older), no follow-up imaging recommended |
+
+**MIPS core measures.** From the 2027 performance period, CMS requires MIPS reporting, in traditional MIPS and in MIPS Value Pathways, to include at least one MIPS core measure; small practices are exempt. For diagnostic radiology the core measures are 145, 360 and 405. Guardian supports 360 and 405. See the CMS Quality Payment Program final rule for 2027 for the full requirement.
 
 **Not included:** measure 145 (fluoroscopy radiation exposure indices) needs every fluoroscopy procedure report, which many sites do not send to Guardian. Measure 494 is an electronic measure built on CT dose and image-quality data rather than report text.
 
