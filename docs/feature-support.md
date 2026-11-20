@@ -20,7 +20,7 @@ How each Guardian Pro feature can be used: in the standard Guardian app, inside 
 | Peer learning conference (M&M) and PowerPoint export | Case baskets and slide export with viewer QR links | 🟢 Yes | 🟢 Yes | 🔴 No |
 | Peer learning search | Search past cases by finding, text or filters | 🟢 Yes | 🟢 Yes | 🟢 Yes |
 | Flag Case | A radiologist flags a case for review from PACS or reporting | 🟢 Yes | 🟢 Yes | 🟢 Yes |
-| Quality measures | Measure library and results | 🟢 Yes | 🟢 Yes | 🔴 No |
+| Quality measures | CMS MIPS measures 360, 364, 405 and 406, with registry export ([details](quality-measures.md)) | 🟢 Yes | 🟢 Yes | 🔴 No |
 | Compliance and accreditation | Peer review volumes and accreditation evidence | 🟢 Yes | 🟢 Yes | 🔴 No |
 | Site overview and worklist | Site analytics, live tasks, worklist status | 🟢 Yes | 🟢 Yes | 🔴 No |
 | Notifications | Assignment, great call, champion and self-review emails | 🟢 Yes | 🟢 Yes | 🟡 Partial |
