@@ -20,6 +20,7 @@ This documentation provides comprehensive guidance for Guardian Pro, an AI-enric
 
 - [AI Models](docs/models.md)
 - [Compliance & Accreditation](docs/compliance.md)
+- [Quality Measures](docs/quality-measures.md)
 - [Security](docs/security.md)
   - [Encryption in Transit](docs/security/encryption-in-transit.md)
   - [Audit Log](docs/security/audit-log.md)
