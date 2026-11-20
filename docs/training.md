@@ -39,7 +39,7 @@ Our structured 3-week onboarding process ensures you get up and running quickly 
 - **Focus**: Critical miss handling and quality assurance workflows
 - **Process**: When a critical miss occurs, the designated Quality Champion receives an email notification and the case is pinned at the top of their Peer Review worklist:
   - Direct live link to access the study (the viewer shows the accession number)
-  - By default the champion scores the case before the report author's name is shown
+  - By default the report author's and the peer reviewer's names are masked; the champion clicks the eye icon to show them
   - Optionally, the report author is emailed the champion's final decision
 - **Actions**: Utilize existing institutional policies and procedures, which may include:
   - Direct patient contact
